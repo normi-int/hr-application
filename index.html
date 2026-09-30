@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1f2937">
+<meta name="robots" content="noindex, nofollow">
+<title>Recruitment</title>
+<style>
+  :root{--bg:#f4f5f7;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb;--green:#16a34a;--red:#dc2626;--amber:#d97706;--radius:14px;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.4;padding-bottom:40px;}
+  header.appbar{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+  header.appbar h1{font-size:17px;margin:0;font-weight:600;flex:1}
+  .iconbtn{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:13px;padding:8px 12px;border-radius:10px;cursor:pointer;}
+  .langsw{display:flex;gap:2px;background:rgba(255,255,255,.15);border-radius:10px;padding:2px;flex:none}
+  .langsw button{border:none;background:transparent;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;padding:6px 9px;border-radius:8px;cursor:pointer}
+  .langsw button.on{background:#fff;color:var(--ink)}
+  .wrap{max-width:980px;margin:0 auto;padding:16px}
+  .appfooter{text-align:center;color:var(--muted);font-size:11px;padding:6px 16px 24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
+  label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:0 0 6px}
+  select,input[type=text],input[type=email],input[type=password],input[type=date],input[type=time],input[type=tel],input[type=search],textarea{width:100%;padding:12px;font-size:16px;border:1px solid #cbd2dc;border-radius:10px;background:#fff;color:var(--ink);font-family:inherit}
+  input[type=file]{width:100%;padding:10px;font-size:14px;border:1px dashed #cbd2dc;border-radius:10px;background:#f9fafb}
+  textarea{min-height:80px;resize:vertical}
+  .row{margin-bottom:14px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:560px){.two{grid-template-columns:1fr;gap:0}}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;font-size:16px;font-weight:600;border:none;border-radius:12px;cursor:pointer;background:var(--accent);color:#fff;font-family:inherit}
+  .btn:active{transform:translateY(1px)}
+  .btn.proceed{background:#22aa96}
+  .btn.cancel{background:#9b0a0a}
+  .btn.add{background:#f26f21}
+  .btn.brown{background:#3b2314}
+  .btn.grey{background:#e5e7eb;color:var(--ink)}
+  .btn.outline{background:#fff;color:var(--ink);border:1px solid #cbd2dc}
+  .btn.outline.red{color:#9b0a0a;border-color:#e8b4b4}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .btn.small{width:auto;padding:9px 14px;font-size:14px}
+  .hide{display:none !important}
+  .muted{color:var(--muted)}
+  .msg{font-size:14px;margin-top:10px;min-height:1em}
+  .msg.err{color:var(--red)} .msg.ok{color:var(--green)}
+  h2.section{font-size:18px;margin:0 0 14px}
+
+  /* list */
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .toolbar input[type=search]{flex:1 1 220px;width:auto;padding:10px 12px;font-size:15px}
+  .toolbar select{flex:0 1 190px;width:auto;padding:10px 12px;font-size:15px}
+  @media (max-width:560px){.toolbar select{flex:1 1 40%}.toolbar .btn{flex:1 1 40%}}
+  .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+  .chip{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;cursor:pointer;font-size:13px;font-family:inherit;color:var(--ink)}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip b{margin-left:5px;opacity:.7}
+  .list{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .lrow{display:grid;grid-template-columns:2fr 1.1fr 1.2fr auto;gap:10px;padding:13px 16px;border-top:1px solid var(--line);cursor:pointer;align-items:center}
+  .lrow:first-child{border-top:0}
+  .lrow:hover{background:#f9fafb}
+  .sub{color:var(--muted);font-size:13px}
+  .empty{padding:30px;text-align:center;color:var(--muted)}
+  @media (max-width:720px){.lrow{grid-template-columns:1fr auto}.lrow .c2,.lrow .c3{display:none}}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;background:#eee}
+  .s-NEW{background:#dbeafe;color:#1e40af}
+  .s-SHORTLISTED{background:#d1fae5;color:#065f46}
+  .s-INTERVIEW_SCHEDULED,.s-INTERVIEWED{background:#fef3c7;color:#92400e}
+  .s-PASSED{background:#16a34a;color:#fff}
+  .s-KEEP_SCREENING,.s-KEEP_INTERVIEW{background:#ede9fe;color:#5b21b6}
+  .s-REJECTED_SCREENING,.s-REJECTED_INTERVIEW{background:#fee2e2;color:#991b1b}
+
+  /* side panel */
+  .overlay{position:fixed;inset:0;background:rgba(17,24,39,.45);display:flex;justify-content:flex-end;z-index:30}
+  .panel{background:var(--bg);width:min(680px,100%);height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .phead{position:sticky;top:0;z-index:2;background:var(--ink);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
+  .phead h2{margin:0;font-size:17px;flex:1;font-weight:600}
+  .pbody{padding:16px}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:15px}
+  .kv>div:nth-child(odd){color:var(--muted);font-size:13px;padding-top:2px}
+  .kv a{color:var(--accent)}
+  .files{display:flex;flex-wrap:wrap;gap:8px}
+  .fbtn{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border:1px solid #cbd2dc;border-radius:10px;background:#fff;color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;text-align:left;word-break:break-all;text-decoration:none}
+  .fbtn:hover{border-color:var(--accent)}
+  .fbtn .tag{font-size:11px;font-weight:700;color:#fff;background:#6b7280;border-radius:6px;padding:1px 6px;flex:none}
+  .fbtn .tag.cv{background:#2563eb} .fbtn .tag.portfolio{background:#f26f21} .fbtn .tag.interview{background:#22aa96}
+  .actions{display:flex;flex-wrap:wrap;gap:8px}
+  .actform{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:14px;margin-top:12px}
+  .actform .btns{display:flex;gap:8px;margin-top:6px}
+  .tl{list-style:none;padding:0;margin:0}
+  .tl li{padding:10px 0;border-top:1px dashed var(--line);font-size:14px;white-space:pre-wrap}
+  .tl li:first-child{border-top:0}
+  .tl .meta{color:var(--muted);font-size:12px;white-space:normal;margin-bottom:2px}
+  .icard{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;font-size:14px}
+  .icard .body{white-space:pre-wrap;margin:6px 0}
+  table.users{width:100%;border-collapse:collapse;font-size:14px}
+  table.users td{padding:10px 6px;border-top:1px solid var(--line);vertical-align:middle}
+  table.users select{padding:8px;font-size:14px;width:auto}
+
+  /* file viewer */
+  .viewer{position:fixed;inset:0;z-index:50;background:#2b2926;display:flex;flex-direction:column}
+  .vhead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#111827;color:#fff}
+  .vhead span{flex:1;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .vhead a,.vhead button{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:13px;padding:8px 12px;border-radius:10px;cursor:pointer;text-decoration:none;font-family:inherit}
+  .vbody{flex:1;overflow:auto;padding:12px;-webkit-overflow-scrolling:touch}
+  .vbody canvas,.vbody img{display:block;margin:0 auto 12px;max-width:100%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+  .vbody iframe{width:100%;height:100%;border:0;background:#fff}
+  .vbody .empty{color:#d1d5db}
+
+  .busy{position:fixed;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:60;font-weight:700;font-size:15px;text-align:center;padding:20px}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;z-index:70;font-size:14px;max-width:90vw}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="appbar">
+  <h1 data-i18n="app.title">Recruitment</h1>
+  <div class="langsw">
+    <button type="button" id="btnLangID" data-lang="id">ID</button>
+    <button type="button" id="btnLangEN" data-lang="en">EN</button>
+  </div>
+  <button class="iconbtn hide" id="btnUsers" data-i18n="header.users">👥 Access</button>
+  <button class="iconbtn hide" id="btnLogout" data-i18n="header.signout">Sign out</button>
+</header>
+
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <section id="loginView" class="hide">
+    <div class="card" style="max-width:420px;margin:8vh auto 0">
+      <h2 class="section" data-i18n="login.title">Sign in</h2>
+      <p class="muted" style="font-size:13px;margin:-6px 0 14px" data-i18n="login.confidential">Confidential — authorised staff only.</p>
+      <div class="row"><label data-i18n="login.username">Username</label><input type="text" id="authUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+      <div class="row"><label data-i18n="login.password">Password</label><input type="password" id="authPass" autocomplete="current-password"></div>
+      <button class="btn proceed" id="btnAuthGo" data-i18n="login.signin_btn">Sign in</button>
+      <div class="msg" id="authMsg"></div>
+    </div>
+  </section>
+
+  <!-- NO ACCESS -->
+  <section id="noAccessView" class="hide">
+    <div class="card" style="max-width:460px;margin:8vh auto 0;text-align:center">
+      <h2 class="section" data-i18n="noaccess.title">No access</h2>
+      <p class="muted" data-i18n="noaccess.body">Your account doesn't have access to Recruitment. Ask an HR admin to add you.</p>
+    </div>
+  </section>
+
+  <!-- LIST -->
+  <section id="listView" class="hide">
+    <div class="toolbar">
+      <input type="search" id="q" data-i18n-ph="list.search" placeholder="Search name, phone, email, ID">
+      <select id="fBrand"></select>
+      <select id="fDept"></select>
+      <select id="fPos"></select>
+      <button class="btn small outline" id="btnRefresh" data-i18n="list.refresh">↻ Refresh</button>
+      <button class="btn small add hide" id="btnAdd" data-i18n="list.add">+ Add candidate</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="list" id="list"></div>
+  </section>
+</div>
+<div class="appfooter" id="appFooter"></div>
+
+<div id="overlay" class="overlay hide"><div class="panel" id="panel"></div></div>
+
+<div id="viewer" class="viewer hide">
+  <div class="vhead"><span id="vName"></span><a id="vDl" data-i18n="viewer.download">Download</a><button id="vClose" data-i18n="common.close">Close</button></div>
+  <div class="vbody" id="vBody"></div>
+</div>
+
+<div id="busy" class="busy hide"></div>
+<div id="toast" class="toast hide"></div>
+
+<script>
+var APP_VERSION="v1.0";
+var BUILTIN={url:"https://clprrwuizmlsddxmlvrh.supabase.co", key:"sb_publishable_bY46Emu9VVzYZEhpjxnr2A_9_ranhHt"};
+var BUCKET="hr-files";
+// Google Drive storage: paste the Drive bridge's Web app URL here (see drive-bridge/Code.gs).
+// Leave empty to store files in Supabase Storage instead.
+var DRIVE_BRIDGE_URL="";
+var MAX_MB=10, MAX_TOTAL_MB=40;
+var ACCEPT=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.heic,.zip";
+var PDFJS="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+
+var PERMS={add:["admin","hr"],screening:["admin","hr","reviewer"],schedule:["admin","hr"],record:["admin","hr"],decide:["admin","hr","reviewer"],comment:["admin","hr","reviewer"],reopen:["admin"],addFiles:["admin","hr"],del:["admin"],users:["admin"]};
+var STATUSES=["NEW","SHORTLISTED","KEEP_SCREENING","REJECTED_SCREENING","INTERVIEW_SCHEDULED","INTERVIEWED","PASSED","KEEP_INTERVIEW","REJECTED_INTERVIEW"];
+var GROUPS=[
+  ["active",["NEW","SHORTLISTED","INTERVIEW_SCHEDULED","INTERVIEWED"]],
+  ["new",["NEW"]],["short",["SHORTLISTED"]],["int",["INTERVIEW_SCHEDULED","INTERVIEWED"]],
+  ["pass",["PASSED"]],["keep",["KEEP_SCREENING","KEEP_INTERVIEW"]],
+  ["rej",["REJECTED_SCREENING","REJECTED_INTERVIEW"]],["all",null]
+];
+var SOURCES=["Walk-in","Referral","JobStreet","Glints","Kalibrr","LinkedIn","Instagram","Other"];
+
+/* ---------------- i18n ---------------- */
+var I18N={
+ en:{
+  "app.title":"Recruitment","header.users":"👥 Access","header.signout":"Sign out",
+  "login.title":"Sign in","login.confidential":"Confidential — authorised staff only.","login.username":"Username","login.password":"Password","login.signin_btn":"Sign in",
+  "login.err_enter_both":"Enter your username and password.","login.err_failed":"Wrong username or password.",
+  "noaccess.title":"No access","noaccess.body":"Your account doesn't have access to Recruitment. Ask an HR admin to add you.",
+  "list.search":"Search name, phone, email, ID","list.refresh":"↻ Refresh","list.add":"+ Add candidate","list.all_brands":"All brands","list.all_depts":"All departments","list.all_pos":"All positions",
+  "list.empty":"No candidates here.","list.loading":"Loading…","list.added":"Added","list.interview":"Interview",
+  "g.active":"In progress","g.new":"New","g.short":"Shortlisted","g.int":"Interview","g.pass":"Passed","g.keep":"Kept for reference","g.rej":"Rejected","g.all":"All",
+  "st.NEW":"New","st.SHORTLISTED":"Shortlisted","st.KEEP_SCREENING":"Kept for reference (screening)","st.REJECTED_SCREENING":"Rejected (screening)","st.INTERVIEW_SCHEDULED":"Interview scheduled","st.INTERVIEWED":"Interviewed – awaiting decision","st.PASSED":"Passed","st.KEEP_INTERVIEW":"Kept for reference (interview)","st.REJECTED_INTERVIEW":"Rejected (interview)",
+  "f.name":"Full name","f.phone":"Phone / WhatsApp","f.email":"Email","f.brand":"Brand","f.dept":"Department","f.pos":"Position","f.source":"Source","f.plink":"Portfolio link","f.cv":"CV","f.pf":"Portfolio files (you can pick several)","f.notes":"Notes","f.choose":"Choose…","f.choose_dept":"Choose department first",
+  "f.plink_ph":"Instagram, Behance, Drive…","f.notes_ph":"Expected salary, availability, who referred them…","f.req_note":"CV or portfolio (file or link) is required. Max "+MAX_MB+" MB per file.",
+  "add.title":"Add candidate","add.save":"Save candidate","add.err_fill":"Please fill in name, brand, department and position.","add.err_files":"Please add a CV, or a portfolio file/link.",
+  "add.dup":"This phone/email is already in the system:","add.dup_q":"Save as a new application anyway?","add.saved":"Candidate saved","add.upload_fail":"Candidate saved, but these files failed to upload — use \"Add files\" to try again:",
+  "d.position":"Position","d.brand":"Brand","d.phone":"Phone","d.email":"Email","d.source":"Source","d.interview":"Interview","d.added":"Added","d.by":"by","d.notes":"Notes",
+  "d.files":"Files","d.nofiles":"No files yet.","d.plink":"Portfolio link","d.actions":"Actions","d.noactions":"No actions available.","d.interviews":"Interviews","d.round":"Round","d.rec":"Recommendation","d.recorded_by":"Recorded by","d.history":"History",
+  "a.shortlist":"Shortlist","a.keep":"Keep for reference","a.reject":"Reject","a.schedule":"Schedule interview","a.reschedule":"Reschedule","a.schedule_again":"Schedule another round","a.record":"Record interview","a.pass":"Pass","a.reopen":"Reopen as New","a.comment":"Add comment","a.addfiles":"Add files","a.delete":"Delete candidate",
+  "a.reason":"Reason","a.comment_opt":"Comment (optional)","a.your_comment":"Your comment","a.confirm":"Confirm","a.date":"Date","a.time":"Time","a.interviewer":"Interviewer","a.location":"Location / link","a.location_ph":"Outlet, office or video link","a.note":"Note",
+  "a.recommend":"Interviewer's recommendation","a.int_comments":"Interview comments","a.int_ph":"Strengths, concerns, expected salary, availability…","a.int_form":"Interview form (scan / photo / PDF)",
+  "a.file_kind":"File type","a.kind_cv":"CV","a.kind_portfolio":"Portfolio","a.kind_interview":"Interview form","a.pick_files":"Files",
+  "a.delete_warn":"This permanently deletes the candidate, all their files and history. Use it when a candidate asks for their data to be removed. It cannot be undone.","a.delete_reason":"Reason for deleting",
+  "a.err_date":"Please pick the date and time.","a.err_nofiles":"Please choose at least one file.","a.saved":"Saved","a.deleted":"Candidate deleted",
+  "viewer.download":"Download","viewer.loading":"Loading…","viewer.nopreview":"No preview for this file type (Word, PowerPoint, HEIC, ZIP). Use Download.",
+  "u.title":"Access","u.intro":"Who can use Recruitment. Owners are always admin. Create the account first the usual way (same accounts as Maintenance / Store Visit), then add it here.",
+  "u.add":"Add user","u.login":"Username or email","u.role":"Role","u.remove":"Remove","u.owner":"Owner (always admin)","u.roles_help":"admin: everything + access + delete · hr: add candidates, upload, schedule & record interviews, decide · reviewer: view, shortlist/keep/reject, decide after interview, comment",
+  "r.admin":"Admin","r.hr":"HR","r.reviewer":"Reviewer",
+  "common.close":"Close","common.cancel":"Cancel","common.please_wait":"Please wait…","common.session":"Session ended — please sign in again.","common.uploading":"Uploading"
+ },
+ id:{
+  "app.title":"Rekrutmen","header.users":"👥 Akses","header.signout":"Keluar",
+  "login.title":"Masuk","login.confidential":"Rahasia — khusus staf berwenang.","login.username":"Username","login.password":"Password","login.signin_btn":"Masuk",
+  "login.err_enter_both":"Isi username dan password.","login.err_failed":"Username atau password salah.",
+  "noaccess.title":"Tidak ada akses","noaccess.body":"Akun Anda belum punya akses ke Rekrutmen. Minta admin HR untuk menambahkan Anda.",
+  "list.search":"Cari nama, telepon, email, ID","list.refresh":"↻ Muat ulang","list.add":"+ Tambah kandidat","list.all_brands":"Semua brand","list.all_depts":"Semua departemen","list.all_pos":"Semua posisi",
+  "list.empty":"Tidak ada kandidat.","list.loading":"Memuat…","list.added":"Ditambahkan","list.interview":"Interview",
+  "g.active":"Dalam proses","g.new":"Baru","g.short":"Shortlist","g.int":"Interview","g.pass":"Lolos","g.keep":"Simpan untuk referensi","g.rej":"Ditolak","g.all":"Semua",
+  "st.NEW":"Baru","st.SHORTLISTED":"Shortlist","st.KEEP_SCREENING":"Simpan untuk referensi (screening)","st.REJECTED_SCREENING":"Ditolak (screening)","st.INTERVIEW_SCHEDULED":"Interview dijadwalkan","st.INTERVIEWED":"Sudah interview – menunggu keputusan","st.PASSED":"Lolos","st.KEEP_INTERVIEW":"Simpan untuk referensi (interview)","st.REJECTED_INTERVIEW":"Ditolak (interview)",
+  "f.name":"Nama lengkap","f.phone":"Telepon / WhatsApp","f.email":"Email","f.brand":"Brand","f.dept":"Departemen","f.pos":"Posisi","f.source":"Sumber","f.plink":"Link portofolio","f.cv":"CV","f.pf":"File portofolio (bisa pilih beberapa)","f.notes":"Catatan","f.choose":"Pilih…","f.choose_dept":"Pilih departemen dulu",
+  "f.plink_ph":"Instagram, Behance, Drive…","f.notes_ph":"Ekspektasi gaji, ketersediaan, siapa yang mereferensikan…","f.req_note":"Wajib ada CV atau portofolio (file atau link). Maks "+MAX_MB+" MB per file.",
+  "add.title":"Tambah kandidat","add.save":"Simpan kandidat","add.err_fill":"Isi nama, brand, departemen dan posisi.","add.err_files":"Tambahkan CV, atau file/link portofolio.",
+  "add.dup":"Telepon/email ini sudah ada di sistem:","add.dup_q":"Tetap simpan sebagai lamaran baru?","add.saved":"Kandidat tersimpan","add.upload_fail":"Kandidat tersimpan, tapi file berikut gagal di-upload — gunakan \"Tambah file\" untuk coba lagi:",
+  "d.position":"Posisi","d.brand":"Brand","d.phone":"Telepon","d.email":"Email","d.source":"Sumber","d.interview":"Interview","d.added":"Ditambahkan","d.by":"oleh","d.notes":"Catatan",
+  "d.files":"File","d.nofiles":"Belum ada file.","d.plink":"Link portofolio","d.actions":"Tindakan","d.noactions":"Tidak ada tindakan.","d.interviews":"Interview","d.round":"Ronde","d.rec":"Rekomendasi","d.recorded_by":"Dicatat oleh","d.history":"Riwayat",
+  "a.shortlist":"Shortlist","a.keep":"Simpan untuk referensi","a.reject":"Tolak","a.schedule":"Jadwalkan interview","a.reschedule":"Jadwal ulang","a.schedule_again":"Jadwalkan ronde berikutnya","a.record":"Catat hasil interview","a.pass":"Lolos","a.reopen":"Buka ulang sebagai Baru","a.comment":"Tambah komentar","a.addfiles":"Tambah file","a.delete":"Hapus kandidat",
+  "a.reason":"Alasan","a.comment_opt":"Komentar (opsional)","a.your_comment":"Komentar Anda","a.confirm":"Konfirmasi","a.date":"Tanggal","a.time":"Jam","a.interviewer":"Pewawancara","a.location":"Lokasi / link","a.location_ph":"Outlet, kantor atau link video","a.note":"Catatan",
+  "a.recommend":"Rekomendasi pewawancara","a.int_comments":"Komentar interview","a.int_ph":"Kelebihan, kekhawatiran, ekspektasi gaji, ketersediaan…","a.int_form":"Form interview (scan / foto / PDF)",
+  "a.file_kind":"Jenis file","a.kind_cv":"CV","a.kind_portfolio":"Portofolio","a.kind_interview":"Form interview","a.pick_files":"File",
+  "a.delete_warn":"Ini menghapus permanen kandidat beserta semua file dan riwayatnya. Gunakan jika kandidat meminta datanya dihapus. Tidak bisa dibatalkan.","a.delete_reason":"Alasan menghapus",
+  "a.err_date":"Pilih tanggal dan jam.","a.err_nofiles":"Pilih minimal satu file.","a.saved":"Tersimpan","a.deleted":"Kandidat dihapus",
+  "viewer.download":"Unduh","viewer.loading":"Memuat…","viewer.nopreview":"Pratinjau tidak tersedia untuk jenis file ini (Word, PowerPoint, HEIC, ZIP). Gunakan Unduh.",
+  "u.title":"Akses","u.intro":"Siapa saja yang bisa memakai Rekrutmen. Owner selalu admin. Buat akunnya dulu seperti biasa (akun yang sama dengan Maintenance / Store Visit), lalu tambahkan di sini.",
+  "u.add":"Tambah user","u.login":"Username atau email","u.role":"Peran","u.remove":"Hapus","u.owner":"Owner (selalu admin)","u.roles_help":"admin: semua + akses + hapus · hr: tambah kandidat, upload, jadwalkan & catat interview, putuskan · reviewer: lihat, shortlist/simpan/tolak, putuskan setelah interview, komentar",
+  "r.admin":"Admin","r.hr":"HR","r.reviewer":"Reviewer",
+  "common.close":"Tutup","common.cancel":"Batal","common.please_wait":"Mohon tunggu…","common.session":"Sesi berakhir — silakan masuk lagi.","common.uploading":"Meng-upload"
+ }
+};
+var currentLang="id";
+function t(k){ return (I18N[currentLang]&&I18N[currentLang][k]) || I18N.en[k] || k; }
+function applyI18n(){
+  document.querySelectorAll("[data-i18n]").forEach(function(el){ el.textContent=t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){ el.placeholder=t(el.dataset.i18nPh); });
+  $("btnLangID").classList.toggle("on",currentLang==="id"); $("btnLangEN").classList.toggle("on",currentLang==="en");
+  document.documentElement.lang=currentLang; document.title=t("app.title");
+}
+function setLang(l, skipSave){
+  currentLang=(l==="en")?"en":"id";
+  try{ localStorage.setItem("hr_lang",currentLang); }catch(e){}
+  applyI18n();
+  if(!skipSave && me && sb){ sb.from("profiles").update({lang:currentLang}).eq("id",me.id).then(function(){}); }
+  if(me && hrRole){ fillFilters(); render(); if(S.current) renderDetail(); }
+}
+
+/* ---------------- helpers ---------------- */
+var $=function(id){ return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function can(p){ return PERMS[p].indexOf(hrRole)>=0; }
+function pill(s){ return '<span class="pill s-'+esc(s)+'">'+esc(t("st."+s))+'</span>'; }
+function opts(arr, sel, blank){ return (blank!=null?'<option value="">'+esc(blank)+'</option>':'')+arr.map(function(v){ return '<option'+(v===sel?' selected':'')+'>'+esc(v)+'</option>'; }).join(""); }
+function loc(){ return currentLang==="id"?"id-ID":"en-GB"; }
+function fmtDT(iso){ if(!iso) return ""; return new Date(iso).toLocaleString(loc(),{timeZone:"Asia/Jakarta",day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
+function fmtD(iso){ if(!iso) return ""; return new Date(iso).toLocaleDateString(loc(),{timeZone:"Asia/Jakarta",day:"numeric",month:"short",year:"numeric"}); }
+function normPhone(p){ var d=String(p||"").replace(/\D/g,""); if(d.indexOf("62")===0) d="0"+d.slice(2); return d; }
+function waNum(p){ var d=String(p||"").replace(/\D/g,""); if(d.indexOf("0")===0) d="62"+d.slice(1); return d; }
+function safeKey(n){ return String(n||"file").normalize("NFKD").replace(/[^\w.\-]+/g,"_").replace(/_+/g,"_").slice(-80); }
+function busy(msg){ var b=$("busy"); if(msg===false){ b.classList.add("hide"); return; } b.textContent=msg||t("common.please_wait"); b.classList.remove("hide"); }
+var toastT; function toast(m){ var el=$("toast"); el.textContent=m; el.classList.remove("hide"); clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.add("hide"); },3500); }
+function show(id){ ["loginView","noAccessView","listView"].forEach(function(v){ $(v).classList.toggle("hide", v!==id); }); }
+function errMsg(e){ var m=(e&&(e.message||e.error_description))||String(e); if(/JWT|refresh token|not authenticated/i.test(m)){ toast(t("common.session")); signOut(); } return m; }
+async function rpc(fn,args){ var r=await sb.rpc(fn,args||{}); if(r.error) throw new Error(errMsg(r.error)); return r.data; }
+function openPanel(title, html){
+  $("panel").innerHTML='<div class="phead"><h2>'+esc(title)+'</h2><button class="iconbtn" data-close>'+esc(t("common.close"))+'</button></div><div class="pbody">'+html+'</div>';
+  $("overlay").classList.remove("hide"); $("panel").scrollTop=0;
+}
+function closePanel(){ $("overlay").classList.add("hide"); $("panel").innerHTML=""; S.current=null; }
+
+/* ---------------- state + auth ---------------- */
+var sb=null, me=null, hrRole=null;
+var S={rows:[], group:"active", current:null, acts:[], brands:[], depts:[], positions:{}};
+function initSupabase(){ try{ sb=window.supabase.createClient(BUILTIN.url, BUILTIN.key); }catch(e){} }
+
+async function emailForUsername(u){
+  if(u.indexOf("@")>0) return u.toLowerCase();
+  var r=await sb.rpc("email_for_username",{u:u});
+  if(r.error) throw r.error;
+  return r.data;
+}
+async function doSignIn(){
+  var u=$("authUser").value.trim(), p=$("authPass").value, m=$("authMsg");
+  m.className="msg"; m.textContent="";
+  if(!u||!p){ m.className="msg err"; m.textContent=t("login.err_enter_both"); return; }
+  $("btnAuthGo").disabled=true;
+  try{
+    var email=await emailForUsername(u);
+    if(!email) throw new Error("no user");
+    var r=await sb.auth.signInWithPassword({email:email,password:p});
+    if(r.error) throw r.error;
+    $("authPass").value="";
+    await afterLogin();
+  }catch(e){ m.className="msg err"; m.textContent=t("login.err_failed"); }
+  finally{ $("btnAuthGo").disabled=false; }
+}
+async function afterLogin(){
+  var s=await sb.auth.getSession();
+  var user=s.data && s.data.session && s.data.session.user;
+  if(!user){ show("loginView"); return; }
+  var pr=await sb.from("profiles").select("id,email,name,role,username,lang").eq("id",user.id).limit(1);
+  if(pr.error || !pr.data || !pr.data.length){ show("loginView"); return; }
+  me=pr.data[0];
+  setLang(me.lang || currentLang, true);
+  $("btnLogout").classList.remove("hide");
+  var rr=await sb.rpc("hr_role");
+  hrRole=rr.error?null:rr.data;
+  if(!hrRole){ $("btnUsers").classList.add("hide"); show("noAccessView"); return; }
+  $("btnUsers").classList.toggle("hide", !can("users"));
+  $("btnAdd").classList.toggle("hide", !can("add"));
+  await loadMeta();
+  fillFilters();
+  show("listView");
+  loadList();
+}
+var signingOut=false;
+async function signOut(){
+  if(signingOut) return; signingOut=true;
+  me=null; hrRole=null; S.rows=[];
+  try{ await sb.auth.signOut(); }catch(e){}
+  signingOut=false;
+  closePanel(); closeViewer();
+  ["btnLogout","btnUsers"].forEach(function(id){ $(id).classList.add("hide"); });
+  show("loginView");
+}
+
+/* ---------------- master data ---------------- */
+async function loadMeta(){
+  var brands=[];
+  try{
+    var r=await sb.from("app_config").select("data").eq("key","outlets").limit(1);
+    var cfg=(r.data&&r.data.length)?r.data[0].data:null;
+    (cfg&&cfg.brands||[]).forEach(function(b){ if(b&&b.name) brands.push(b.name); });
+  }catch(e){}
+  var hb=await sb.from("hr_brands").select("name").eq("active",true).order("name");
+  (hb.data||[]).forEach(function(b){ brands.push(b.name); });
+  var seen={}; S.brands=brands.filter(function(b){ var k=b.trim().toLowerCase(); if(seen[k]) return false; seen[k]=1; return true; });
+  var ps=await sb.from("hr_positions").select("department,position,sort").eq("active",true).order("sort").order("position");
+  S.depts=[]; S.positions={};
+  (ps.data||[]).forEach(function(p){ if(!S.positions[p.department]){ S.positions[p.department]=[]; S.depts.push(p.department); } S.positions[p.department].push(p.position); });
+}
+
+/* ---------------- list ---------------- */
+function fillFilters(){
+  var b=$("fBrand").value, d=$("fDept").value;
+  $("fBrand").innerHTML=opts(S.brands,b,t("list.all_brands"));
+  $("fDept").innerHTML=opts(S.depts,d,t("list.all_depts"));
+  fillPos();
+}
+function fillPos(){
+  var d=$("fDept").value, p=$("fPos").value;
+  var list=d?(S.positions[d]||[]):[].concat.apply([],S.depts.map(function(x){ return S.positions[x]; }));
+  $("fPos").innerHTML=opts(list,p,t("list.all_pos"));
+}
+async function loadList(){
+  $("list").innerHTML='<div class="empty">'+esc(t("list.loading"))+'</div>';
+  try{
+    var all=[], from=0, step=1000;
+    while(true){
+      var r=await sb.from("hr_candidates").select("id,name,phone,email,phone_norm,brand,department,position,status,created_at,interview_at")
+        .order("created_at",{ascending:false}).range(from,from+step-1);
+      if(r.error) throw r.error;
+      all=all.concat(r.data||[]);
+      if(!r.data || r.data.length<step) break;
+      from+=step;
+    }
+    S.rows=all; render();
+  }catch(e){ $("list").innerHTML='<div class="empty">'+esc(errMsg(e))+'</div>'; }
+}
+function render(){
+  if(!hrRole) return;
+  var q=$("q").value.trim().toLowerCase(), qd=normPhone(q), b=$("fBrand").value, d=$("fDept").value, p=$("fPos").value;
+  var base=S.rows.filter(function(r){
+    if(b && r.brand!==b) return false; if(d && r.department!==d) return false; if(p && r.position!==p) return false;
+    if(!q) return true;
+    return [r.name,r.email,r.id,r.phone].join(" ").toLowerCase().indexOf(q)>=0 || (qd.length>=4 && (r.phone_norm||"").indexOf(qd)>=0);
+  });
+  $("chips").innerHTML=GROUPS.map(function(g){
+    var n=g[1]?base.filter(function(r){ return g[1].indexOf(r.status)>=0; }).length:base.length;
+    return '<button class="chip'+(S.group===g[0]?' on':'')+'" data-g="'+g[0]+'">'+esc(t("g."+g[0]))+'<b>'+n+'</b></button>';
+  }).join("");
+  var st=GROUPS.filter(function(g){ return g[0]===S.group; })[0][1];
+  var rows=st?base.filter(function(r){ return st.indexOf(r.status)>=0; }):base;
+  $("list").innerHTML=rows.length?rows.map(function(r){
+    var iv=(r.interview_at && (r.status==="INTERVIEW_SCHEDULED"||r.status==="INTERVIEWED"))?t("list.interview")+" "+fmtDT(r.interview_at):"";
+    return '<div class="lrow" data-id="'+esc(r.id)+'"><div><b>'+esc(r.name)+'</b><div class="sub">'+esc(r.position)+' · '+esc(r.brand)+'</div></div>'+
+      '<div class="c2 sub">'+esc(t("list.added"))+' '+esc(fmtD(r.created_at))+'</div><div class="c3 sub">'+esc(iv)+'</div><div>'+pill(r.status)+'</div></div>';
+  }).join(""):'<div class="empty">'+esc(t("list.empty"))+'</div>';
+}
+
+/* ---------------- detail ---------------- */
+async function openCandidate(id){
+  busy();
+  try{
+    var res=await Promise.all([
+      sb.from("hr_candidates").select("*").eq("id",id).limit(1),
+      sb.from("hr_files").select("id,kind,name,path,size,mime,interview_id,uploaded_at").eq("candidate_id",id).order("uploaded_at"),
+      sb.from("hr_interviews").select("*").eq("candidate_id",id).order("round"),
+      sb.from("hr_activity").select("at,user_name,action,from_status,to_status,comment").eq("candidate_id",id).order("at",{ascending:false})
+    ]);
+    res.forEach(function(r){ if(r.error) throw r.error; });
+    if(!res[0].data.length) throw new Error("Candidate not found.");
+    S.current={c:res[0].data[0], files:res[1].data, interviews:res[2].data, activity:res[3].data};
+    renderDetail();
+  }catch(e){ toast(errMsg(e)); }
+  finally{ busy(false); }
+}
+function fileBtn(f){
+  var tag=f.kind==="cv"?t("a.kind_cv"):f.kind==="portfolio"?t("a.kind_portfolio"):t("a.kind_interview");
+  return '<button class="fbtn" data-view="'+esc(f.id)+'"><span class="tag '+esc(f.kind)+'">'+esc(tag)+'</span>'+esc(f.name)+'</button>';
+}
+function renderDetail(){
+  var D=S.current, c=D.c;
+  var main=D.files.filter(function(f){ return f.kind!=="interview"; });
+  var plink=c.portfolio_link?'<a class="fbtn" href="'+esc(/^https?:\/\//i.test(c.portfolio_link)?c.portfolio_link:"https://"+c.portfolio_link)+'" target="_blank" rel="noopener"><span class="tag portfolio">🔗</span>'+esc(t("d.plink"))+'</a>':"";
+  S.acts=actionsFor(c);
+  var html=
+    '<div style="margin-bottom:12px">'+pill(c.status)+' <span class="sub">'+esc(c.id)+'</span></div>'+
+    '<div class="card"><div class="kv">'+
+      '<div>'+esc(t("d.position"))+'</div><div>'+esc(c.position)+' ('+esc(c.department)+')</div>'+
+      '<div>'+esc(t("d.brand"))+'</div><div>'+esc(c.brand)+'</div>'+
+      '<div>'+esc(t("d.phone"))+'</div><div>'+(c.phone?'<a href="https://wa.me/'+esc(waNum(c.phone))+'" target="_blank" rel="noopener">'+esc(c.phone)+'</a>':'–')+'</div>'+
+      '<div>'+esc(t("d.email"))+'</div><div>'+(c.email?'<a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>':'–')+'</div>'+
+      '<div>'+esc(t("d.source"))+'</div><div>'+esc(c.source||'–')+'</div>'+
+      (c.interview_at?'<div>'+esc(t("d.interview"))+'</div><div>'+esc(fmtDT(c.interview_at))+' · '+esc(c.interviewer||'')+(c.interview_location?' · '+esc(c.interview_location):'')+'</div>':'')+
+      '<div>'+esc(t("d.added"))+'</div><div>'+esc(fmtDT(c.created_at))+'</div>'+
+      (c.notes?'<div>'+esc(t("d.notes"))+'</div><div style="white-space:pre-wrap">'+esc(c.notes)+'</div>':'')+
+    '</div></div>'+
+    '<div class="card"><h2 class="section">'+esc(t("d.files"))+'</h2><div class="files">'+(main.map(fileBtn).join("")+plink||'<span class="muted">'+esc(t("d.nofiles"))+'</span>')+'</div></div>'+
+    '<div class="card"><h2 class="section">'+esc(t("d.actions"))+'</h2><div class="actions">'+
+      (S.acts.map(function(a,i){ return '<button class="btn small '+a[3]+'" data-act="'+i+'">'+esc(a[2])+'</button>'; }).join("")||'<span class="muted">'+esc(t("d.noactions"))+'</span>')+
+    '</div><div id="actArea"></div></div>'+
+    (D.interviews.length?'<div class="card"><h2 class="section">'+esc(t("d.interviews"))+'</h2>'+D.interviews.map(function(v){
+      var forms=D.files.filter(function(f){ return f.interview_id===v.id; });
+      return '<div class="icard"><b>'+esc(t("d.round"))+' '+esc(v.round)+'</b> · '+esc(fmtDT(v.interview_at))+' · '+esc(v.interviewer||'')+
+        (v.recommendation?'<br><span class="sub">'+esc(t("d.rec"))+':</span> <b>'+esc(({"Pass":t("a.pass"),"Keep for reference":t("a.keep"),"Reject":t("a.reject")})[v.recommendation]||v.recommendation)+'</b>':'')+
+        '<div class="body">'+esc(v.comment)+'</div>'+(forms.length?'<div class="files" style="margin-bottom:6px">'+forms.map(fileBtn).join("")+'</div>':'')+
+        '<div class="sub">'+esc(t("d.recorded_by"))+' '+esc(v.recorded_by_name||'')+', '+esc(fmtDT(v.recorded_at))+'</div></div>';
+    }).join("")+'</div>':'')+
+    '<div class="card"><h2 class="section">'+esc(t("d.history"))+'</h2><ul class="tl">'+D.activity.map(function(a){
+      var arrow=(a.to_status && a.from_status!==a.to_status)?' → '+esc(t("st."+a.to_status)):'';
+      return '<li><div class="meta">'+esc(fmtDT(a.at))+' · '+esc(a.user_name||'')+' · <b>'+esc(a.action)+'</b>'+arrow+'</div>'+(a.comment?esc(a.comment):'')+'</li>';
+    }).join("")+'</ul></div>';
+  openPanel(c.name, html);
+}
+function actionsFor(c){
+  var s=c.status, a=[];
+  if(["NEW","KEEP_SCREENING","SHORTLISTED"].indexOf(s)>=0 && can("screening")){
+    if(s!=="SHORTLISTED") a.push(["screening","SHORTLISTED",t("a.shortlist"),"proceed"]);
+    if(s!=="KEEP_SCREENING") a.push(["screening","KEEP_SCREENING",t("a.keep"),"outline"]);
+    a.push(["screening","REJECTED_SCREENING",t("a.reject"),"outline red"]);
+  }
+  if(["SHORTLISTED","INTERVIEW_SCHEDULED","INTERVIEWED","KEEP_INTERVIEW"].indexOf(s)>=0 && can("schedule"))
+    a.push(["schedule","",s==="SHORTLISTED"?t("a.schedule"):s==="INTERVIEW_SCHEDULED"?t("a.reschedule"):t("a.schedule_again"),s==="SHORTLISTED"?"proceed":"outline"]);
+  if(s==="INTERVIEW_SCHEDULED" && can("record")) a.push(["record","",t("a.record"),"proceed"]);
+  if(["INTERVIEW_SCHEDULED","INTERVIEWED","KEEP_INTERVIEW"].indexOf(s)>=0 && can("decide")){
+    a.push(["decide","PASSED",t("a.pass"),s==="INTERVIEWED"?"proceed":"outline"]);
+    if(s!=="KEEP_INTERVIEW") a.push(["decide","KEEP_INTERVIEW",t("a.keep"),"outline"]);
+    a.push(["decide","REJECTED_INTERVIEW",t("a.reject"),"outline red"]);
+  }
+  if(s!=="NEW" && can("reopen")) a.push(["reopen","NEW",t("a.reopen"),"outline"]);
+  if(can("comment")) a.push(["comment","",t("a.comment"),"outline"]);
+  if(can("addFiles")) a.push(["files","",t("a.addfiles"),"outline"]);
+  if(can("del")) a.push(["delete","",t("a.delete"),"outline red"]);
+  return a;
+}
+function showForm(i){
+  var a=S.acts[i], kind=a[0], to=a[1], label=a[2], rej=/^REJECTED/.test(to), c=S.current.c, body="";
+  if(kind==="schedule"){
+    var today=new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
+    body='<div class="two"><div class="row"><label>'+esc(t("a.date"))+' *</label><input type="date" id="fDate" min="'+today+'"></div>'+
+      '<div class="row"><label>'+esc(t("a.time"))+' *</label><input type="time" id="fTime"></div></div>'+
+      '<div class="two"><div class="row"><label>'+esc(t("a.interviewer"))+' *</label><input type="text" id="fWho" value="'+esc(c.interviewer||"")+'"></div>'+
+      '<div class="row"><label>'+esc(t("a.location"))+'</label><input type="text" id="fLoc" value="'+esc(c.interview_location||"")+'" placeholder="'+esc(t("a.location_ph"))+'"></div></div>'+
+      '<div class="row"><label>'+esc(t("a.note"))+'</label><textarea id="fCm"></textarea></div>';
+  }else if(kind==="record"){
+    body='<div class="row"><label>'+esc(t("a.recommend"))+'</label><select id="fRec"><option value="">–</option>'+
+      [["Pass","a.pass"],["Keep for reference","a.keep"],["Reject","a.reject"]].map(function(o){ return '<option value="'+o[0]+'">'+esc(t(o[1]))+'</option>'; }).join("")+'</select></div>'+
+      '<div class="row"><label>'+esc(t("a.int_comments"))+' *</label><textarea id="fCm" placeholder="'+esc(t("a.int_ph"))+'"></textarea></div>'+
+      '<div class="row"><label>'+esc(t("a.int_form"))+'</label><input type="file" id="fFile" accept="'+ACCEPT+'" multiple></div>';
+  }else if(kind==="files"){
+    body='<div class="row"><label>'+esc(t("a.file_kind"))+'</label><select id="fKind"><option value="cv">'+esc(t("a.kind_cv"))+'</option><option value="portfolio">'+esc(t("a.kind_portfolio"))+'</option>'+
+      (S.current.interviews.length?'<option value="interview">'+esc(t("a.kind_interview"))+'</option>':'')+'</select></div>'+
+      '<div class="row"><label>'+esc(t("a.pick_files"))+' *</label><input type="file" id="fFile" accept="'+ACCEPT+'" multiple></div>';
+  }else if(kind==="delete"){
+    body='<p style="color:#9b0a0a;font-size:14px;margin-top:0">'+esc(t("a.delete_warn"))+'</p>'+
+      '<div class="row"><label>'+esc(t("a.delete_reason"))+' *</label><textarea id="fCm"></textarea></div>';
+  }else{
+    var lab=kind==="comment"?t("a.your_comment")+" *":rej?t("a.reason")+" *":t("a.comment_opt");
+    body='<div class="row"><label>'+esc(lab)+'</label><textarea id="fCm"></textarea></div>';
+  }
+  $("actArea").innerHTML='<div class="actform"><h2 class="section" style="margin-bottom:10px">'+esc(label)+'</h2>'+body+
+    '<div class="msg err" id="fErr"></div><div class="btns"><button class="btn small '+(kind==="delete"||rej?"cancel":"proceed")+'" id="fGo">'+esc(t("a.confirm"))+'</button>'+
+    '<button class="btn small grey" id="fCancel">'+esc(t("common.cancel"))+'</button></div></div>';
+  $("fCancel").onclick=function(){ $("actArea").innerHTML=""; };
+  $("fGo").onclick=function(){ submitForm(kind,to); };
+  $("actArea").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+async function submitForm(kind,to){
+  var id=S.current.c.id, cm=($("fCm")||{}).value||"", err=$("fErr"), go=$("fGo");
+  err.textContent=""; go.disabled=true;
+  try{
+    if(kind==="screening") await rpc("hr_screening",{p_id:id,p_to:to,p_comment:cm});
+    else if(kind==="decide") await rpc("hr_interview_decision",{p_id:id,p_to:to,p_comment:cm});
+    else if(kind==="reopen") await rpc("hr_reopen",{p_id:id,p_comment:cm});
+    else if(kind==="comment") await rpc("hr_comment",{p_id:id,p_comment:cm});
+    else if(kind==="schedule"){
+      var dt=$("fDate").value, tm=$("fTime").value;
+      if(!dt||!tm) throw new Error(t("a.err_date"));
+      await rpc("hr_schedule",{p_id:id,p_at:new Date(dt+"T"+tm+":00+07:00").toISOString(),p_interviewer:$("fWho").value,p_location:$("fLoc").value,p_comment:cm});
+    }
+    else if(kind==="record"){
+      var rf=[].slice.call($("fFile").files); checkSizes(rf);
+      busy();
+      var iid=await rpc("hr_record_interview",{p_id:id,p_recommendation:$("fRec").value,p_comment:cm});
+      var failed=await uploadFiles(id,"interview",rf,iid);
+      if(failed.length) alert(t("add.upload_fail")+"\n\n"+failed.join("\n"));
+    }
+    else if(kind==="files"){
+      var ff=[].slice.call($("fFile").files); if(!ff.length) throw new Error(t("a.err_nofiles")); checkSizes(ff);
+      var k=$("fKind").value, iv=null;
+      if(k==="interview"){ var last=S.current.interviews[S.current.interviews.length-1]; iv=last?last.id:null; }
+      busy();
+      var fl=await uploadFiles(id,k,ff,iv);
+      if(fl.length) alert(t("add.upload_fail")+"\n\n"+fl.join("\n"));
+    }
+    else if(kind==="delete"){
+      busy();
+      var paths=await rpc("hr_delete_candidate",{p_id:id,p_reason:cm})||[];
+      var gd=paths.filter(function(p){ return /^gdrive:/.test(p); }), st=paths.filter(function(p){ return !/^gdrive:/.test(p); });
+      if(st.length) await sb.storage.from(BUCKET).remove(st);
+      if(gd.length){ try{ await bridge("trash",{candidateId:id,paths:gd}); }catch(e){ alert("Candidate deleted, but some Drive files could not be moved to Bin: "+e.message); } }
+      busy(false); closePanel(); toast(t("a.deleted")); loadList(); return;
+    }
+    busy(false); toast(t("a.saved"));
+    await openCandidate(id);
+    loadList();
+  }catch(e){ busy(false); if($("fErr")) $("fErr").textContent=errMsg(e); if($("fGo")) $("fGo").disabled=false; }
+}
+
+/* ---------------- uploads ---------------- */
+function checkSizes(files){
+  var total=0;
+  files.forEach(function(f){ if(f.size>MAX_MB*1048576) throw new Error(f.name+" > "+MAX_MB+" MB"); total+=f.size; });
+  if(total>MAX_TOTAL_MB*1048576) throw new Error("Total > "+MAX_TOTAL_MB+" MB");
+}
+// Uploads each file (Google Drive via the bridge, or Supabase Storage), then registers it. Returns names that failed.
+async function uploadFiles(cid, kind, files, interviewId){
+  var failed=[];
+  for(var i=0;i<files.length;i++){
+    var f=files[i];
+    busy(t("common.uploading")+" "+(i+1)+"/"+files.length+"…\n"+f.name);
+    try{
+      if(DRIVE_BRIDGE_URL){
+        await bridge("upload",{candidateId:cid,kind:kind,name:f.name,mime:f.type||null,size:f.size,interviewId:interviewId||null,data:await readB64(f)});
+      }else{
+        var path=cid+"/"+kind+"-"+Date.now()+"-"+i+"-"+safeKey(f.name);
+        var up=await sb.storage.from(BUCKET).upload(path,f,{contentType:f.type||"application/octet-stream",upsert:false});
+        if(up.error) throw up.error;
+        await rpc("hr_add_file",{p_candidate:cid,p_kind:kind,p_name:f.name,p_path:path,p_size:f.size,p_mime:f.type||null,p_interview:interviewId||null});
+      }
+    }catch(e){ failed.push(f.name+" — "+errMsg(e)); }
+  }
+  return failed;
+}
+function readB64(file){
+  return new Promise(function(res,rej){ var r=new FileReader();
+    r.onload=function(){ res(String(r.result).split(",")[1]||""); };
+    r.onerror=function(){ rej(new Error("Could not read "+file.name)); };
+    r.readAsDataURL(file); });
+}
+// Calls the Apps Script Drive bridge with the user's Supabase login token.
+// Plain-text POST = no CORS preflight, which Apps Script can't answer.
+async function bridge(action, payload){
+  var s=await sb.auth.getSession();
+  var tok=s.data && s.data.session && s.data.session.access_token;
+  if(!tok){ toast(t("common.session")); signOut(); throw new Error(t("common.session")); }
+  var res, j;
+  try{ res=await fetch(DRIVE_BRIDGE_URL,{method:"POST",body:JSON.stringify(Object.assign({action:action,token:tok},payload))}); j=await res.json(); }
+  catch(e){ throw new Error("Google Drive is not reachable. Check your connection and try again."); }
+  if(!j.ok){ if(/sign in again/i.test(j.error||"")){ toast(t("common.session")); signOut(); } throw new Error(j.error||"Google Drive error"); }
+  return j.data;
+}
+
+/* ---------------- add candidate ---------------- */
+function openAdd(){
+  openPanel(t("add.title"),
+    '<div class="card">'+
+    '<div class="two"><div class="row"><label>'+esc(t("f.name"))+' *</label><input type="text" id="aName"></div>'+
+      '<div class="row"><label>'+esc(t("f.phone"))+'</label><input type="tel" id="aPhone" placeholder="08…"></div></div>'+
+    '<div class="two"><div class="row"><label>'+esc(t("f.email"))+'</label><input type="email" id="aEmail"></div>'+
+      '<div class="row"><label>'+esc(t("f.brand"))+' *</label><select id="aBrand">'+opts(S.brands,"",t("f.choose"))+'</select></div></div>'+
+    '<div class="two"><div class="row"><label>'+esc(t("f.dept"))+' *</label><select id="aDept">'+opts(S.depts,"",t("f.choose"))+'</select></div>'+
+      '<div class="row"><label>'+esc(t("f.pos"))+' *</label><select id="aPos"><option value="">'+esc(t("f.choose_dept"))+'</option></select></div></div>'+
+    '<div class="two"><div class="row"><label>'+esc(t("f.source"))+'</label><select id="aSrc">'+opts(SOURCES,"","–")+'</select></div>'+
+      '<div class="row"><label>'+esc(t("f.plink"))+'</label><input type="text" id="aLink" placeholder="'+esc(t("f.plink_ph"))+'"></div></div>'+
+    '<div class="row"><label>'+esc(t("f.cv"))+'</label><input type="file" id="aCv" accept="'+ACCEPT+'"></div>'+
+    '<div class="row"><label>'+esc(t("f.pf"))+'</label><input type="file" id="aPf" accept="'+ACCEPT+'" multiple></div>'+
+    '<div class="row"><label>'+esc(t("f.notes"))+'</label><textarea id="aNotes" placeholder="'+esc(t("f.notes_ph"))+'"></textarea></div>'+
+    '<p class="muted" style="font-size:13px">'+esc(t("f.req_note"))+'</p>'+
+    '<button class="btn proceed" id="aGo">'+esc(t("add.save"))+'</button><div class="msg err" id="aErr"></div></div>');
+  $("aDept").onchange=function(){ $("aPos").innerHTML=opts(S.positions[$("aDept").value]||[],"",t("f.choose")); };
+  $("aGo").onclick=submitAdd;
+}
+async function findDuplicates(phone,email){
+  var out={}, pn=normPhone(phone), em=String(email||"").trim().toLowerCase();
+  var qs=[];
+  if(pn.length>=8) qs.push(sb.from("hr_candidates").select("id,name,brand,position,status,created_at").eq("phone_norm",pn));
+  if(em) qs.push(sb.from("hr_candidates").select("id,name,brand,position,status,created_at").eq("email",em));
+  var rs=await Promise.all(qs);
+  rs.forEach(function(r){ (r.data||[]).forEach(function(x){ out[x.id]=x; }); });
+  return Object.keys(out).map(function(k){ return out[k]; });
+}
+async function submitAdd(){
+  var err=$("aErr"); err.textContent="";
+  var d={name:$("aName").value.trim(),phone:$("aPhone").value.trim(),email:$("aEmail").value.trim(),brand:$("aBrand").value,department:$("aDept").value,
+         position:$("aPos").value,source:$("aSrc").value,portfolio_link:$("aLink").value.trim(),notes:$("aNotes").value.trim()};
+  var cv=[].slice.call($("aCv").files), pf=[].slice.call($("aPf").files);
+  try{
+    if(!d.name||!d.brand||!d.department||!d.position) throw new Error(t("add.err_fill"));
+    if(!cv.length&&!pf.length&&!d.portfolio_link) throw new Error(t("add.err_files"));
+    checkSizes(cv.concat(pf));
+    $("aGo").disabled=true; busy();
+    var dups=await findDuplicates(d.phone,d.email);
+    if(dups.length){
+      busy(false);
+      var list=dups.map(function(x){ return "• "+x.id+" "+x.name+" — "+x.position+", "+x.brand+" ("+t("st."+x.status)+", "+fmtD(x.created_at)+")"; }).join("\n");
+      if(!confirm(t("add.dup")+"\n\n"+list+"\n\n"+t("add.dup_q"))){ $("aGo").disabled=false; return; }
+      busy();
+    }
+    var id=await rpc("hr_create_candidate",{p:d});
+    var failed=(await uploadFiles(id,"cv",cv,null)).concat(await uploadFiles(id,"portfolio",pf,null));
+    busy(false);
+    if(failed.length) alert(t("add.upload_fail")+"\n\n"+failed.join("\n")); else toast(t("add.saved")+" ("+id+")");
+    loadList();
+    openCandidate(id);
+  }catch(e){ busy(false); err.textContent=errMsg(e); if($("aGo")) $("aGo").disabled=false; }
+}
+
+/* ---------------- in-app file viewer ---------------- */
+var viewSeq=0, viewUrl=null;
+async function viewFile(fileId){
+  var f=S.current && S.current.files.filter(function(x){ return x.id===fileId; })[0];
+  if(!f) return;
+  busy();
+  try{
+    var blob;
+    if(/^gdrive:/.test(f.path)){
+      var d=await bridge("view",{fileId:f.id});   // the bridge logs the view
+      blob=b64ToBlob(d.data, d.mime||f.mime||"application/octet-stream");
+    }else{
+      await rpc("hr_log_view",{p_file:f.id});
+      var r=await sb.storage.from(BUCKET).download(f.path);
+      if(r.error) throw r.error;
+      blob=r.data;
+    }
+    busy(false);
+    showViewer(f, blob);
+  }catch(e){ busy(false); toast(errMsg(e)); }
+}
+function b64ToBlob(d,type){ var bin=atob(d), arr=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:type}); }
+function showViewer(f, blob){
+  var seq=++viewSeq, type=f.mime||blob.type||"";
+  if(viewUrl) URL.revokeObjectURL(viewUrl);
+  viewUrl=URL.createObjectURL(blob);
+  $("vName").textContent=f.name; $("vDl").href=viewUrl; $("vDl").download=f.name;
+  var body=$("vBody"); body.innerHTML="";
+  $("viewer").classList.remove("hide");
+  if(/^image\/(jpe?g|png|webp|gif)$/i.test(type)) body.innerHTML='<img src="'+viewUrl+'" alt="">';
+  else if(type==="application/pdf"||/\.pdf$/i.test(f.name)) renderPdf(blob,body,seq);
+  else body.innerHTML='<div class="empty">'+esc(t("viewer.nopreview"))+'</div>';
+}
+function loadPdfJs(){
+  if(window.pdfjsLib) return Promise.resolve();
+  return new Promise(function(res,rej){
+    var s=document.createElement("script"); s.src=PDFJS+"pdf.min.js";
+    s.onload=function(){ window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+"pdf.worker.min.js"; res(); };
+    s.onerror=function(){ rej(new Error("pdf.js")); };
+    document.head.appendChild(s);
+  });
+}
+async function renderPdf(blob,body,seq){
+  body.innerHTML='<div class="empty">'+esc(t("viewer.loading"))+'</div>';
+  try{
+    await loadPdfJs();
+    var pdf=await window.pdfjsLib.getDocument({data:new Uint8Array(await blob.arrayBuffer())}).promise;
+    if(seq!==viewSeq) return;
+    body.innerHTML="";
+    var w=Math.min(body.clientWidth-24,900), dpr=window.devicePixelRatio||1;
+    for(var p=1;p<=pdf.numPages;p++){
+      if(seq!==viewSeq) return;
+      var page=await pdf.getPage(p), base=page.getViewport({scale:1}), vp=page.getViewport({scale:(w/base.width)*dpr});
+      var cv=document.createElement("canvas"); cv.width=vp.width; cv.height=vp.height; cv.style.width=w+"px";
+      body.appendChild(cv);
+      await page.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;
+    }
+  }catch(e){ if(seq===viewSeq) body.innerHTML='<iframe src="'+viewUrl+'"></iframe>'; }
+}
+function closeViewer(){ viewSeq++; $("viewer").classList.add("hide"); $("vBody").innerHTML=""; if(viewUrl){ URL.revokeObjectURL(viewUrl); viewUrl=null; } }
+
+/* ---------------- access management (admin) ---------------- */
+async function openUsers(){
+  busy();
+  try{
+    var users=await rpc("hr_list_users");
+    busy(false);
+    var roles=["admin","hr","reviewer"];
+    openPanel(t("u.title"),
+      '<div class="card"><p class="muted" style="margin-top:0;font-size:14px">'+esc(t("u.intro"))+'</p><table class="users">'+
+      users.map(function(u){
+        var who='<b>'+esc(u.name||u.email)+'</b><div class="sub">'+esc(u.username||"")+(u.username?" · ":"")+esc(u.email||"")+'</div>';
+        if(u.is_owner) return '<tr><td>'+who+'</td><td class="sub" colspan="2">'+esc(t("u.owner"))+'</td></tr>';
+        return '<tr><td>'+who+'</td><td><select data-urole="'+esc(u.email)+'">'+roles.map(function(r){ return '<option value="'+r+'"'+(r===u.hr_role?' selected':'')+'>'+esc(t("r."+r))+'</option>'; }).join("")+'</select></td>'+
+          '<td style="text-align:right"><button class="btn small outline red" data-uremove="'+esc(u.email)+'">'+esc(t("u.remove"))+'</button></td></tr>';
+      }).join("")+'</table></div>'+
+      '<div class="card"><h2 class="section">'+esc(t("u.add"))+'</h2><div class="two"><div class="row"><label>'+esc(t("u.login"))+'</label><input type="text" id="uLogin" autocapitalize="none"></div>'+
+      '<div class="row"><label>'+esc(t("u.role"))+'</label><select id="uRole">'+roles.map(function(r){ return '<option value="'+r+'"'+(r==="reviewer"?' selected':'')+'>'+esc(t("r."+r))+'</option>'; }).join("")+'</select></div></div>'+
+      '<button class="btn proceed" id="uGo">'+esc(t("u.add"))+'</button><div class="msg err" id="uErr"></div>'+
+      '<p class="muted" style="font-size:12px;margin-bottom:0">'+esc(t("u.roles_help"))+'</p></div>');
+    $("uGo").onclick=async function(){
+      $("uErr").textContent="";
+      try{ await rpc("hr_grant",{p_login:$("uLogin").value,p_role:$("uRole").value}); toast(t("a.saved")); openUsers(); }
+      catch(e){ $("uErr").textContent=errMsg(e); }
+    };
+  }catch(e){ busy(false); toast(errMsg(e)); }
+}
+async function grantChange(login, role){
+  try{ await rpc("hr_grant",{p_login:login,p_role:role}); toast(t("a.saved")); openUsers(); }
+  catch(e){ toast(errMsg(e)); }
+}
+
+/* ---------------- wiring ---------------- */
+$("btnAuthGo").onclick=doSignIn;
+$("authPass").onkeydown=function(e){ if(e.key==="Enter") doSignIn(); };
+$("btnLogout").onclick=signOut;
+$("btnUsers").onclick=openUsers;
+$("btnAdd").onclick=openAdd;
+$("btnRefresh").onclick=loadList;
+$("btnLangID").onclick=function(){ setLang("id"); };
+$("btnLangEN").onclick=function(){ setLang("en"); };
+$("q").oninput=render;
+$("fBrand").onchange=render;
+$("fDept").onchange=function(){ fillPos(); render(); };
+$("fPos").onchange=render;
+$("chips").onclick=function(e){ var b=e.target.closest(".chip"); if(b){ S.group=b.dataset.g; render(); } };
+$("list").onclick=function(e){ var r=e.target.closest(".lrow"); if(r) openCandidate(r.dataset.id); };
+$("panel").addEventListener("click",function(e){
+  if(e.target.closest("[data-close]")) return closePanel();
+  var v=e.target.closest("[data-view]"); if(v) return viewFile(v.dataset.view);
+  var a=e.target.closest("[data-act]"); if(a) return showForm(+a.dataset.act);
+  var rm=e.target.closest("[data-uremove]"); if(rm) return grantChange(rm.dataset.uremove,null);
+});
+$("panel").addEventListener("change",function(e){ var s=e.target.closest("[data-urole]"); if(s) grantChange(s.dataset.urole,s.value); });
+$("overlay").onclick=function(e){ if(e.target.id==="overlay") closePanel(); };
+$("vClose").onclick=closeViewer;
+document.addEventListener("keydown",function(e){ if(e.key!=="Escape") return; if(!$("viewer").classList.contains("hide")) closeViewer(); else closePanel(); });
+
+(async function boot(){
+  $("appFooter").textContent="Recruitment "+APP_VERSION;
+  try{ currentLang=localStorage.getItem("hr_lang")||"id"; }catch(e){}
+  applyI18n();
+  initSupabase();
+  if(!sb){ show("loginView"); $("authMsg").className="msg err"; $("authMsg").textContent="Could not load Supabase."; return; }
+  sb.auth.onAuthStateChange(function(ev){ if(ev==="SIGNED_OUT" && me) signOut(); });
+  await afterLogin();
+})();
+</script>
+</body>
+</html>

@@ -6,7 +6,7 @@ Live URL (after setup): `https://normi-int.github.io/hr-application/`
 
 ## Setup (one time)
 
-1. **Database** — Supabase Dashboard → SQL Editor → New query → paste `supabase/hr_0001_init.sql` → Run.
+1. **Database** — Supabase Dashboard → SQL Editor → New query → paste `supabase/hr_0001_init.sql` → Run, then the same for `supabase/hr_0002_candidate_codes.sql` (candidate codes like `TE-BOH-001`).
    Creates the `hr_*` tables and all permissions. Safe to re-run.
 2. **Google Drive (file storage)** — signed in as the **HR Google account**:
    1. In Google Drive, create a folder, e.g. **HR – Candidates (Confidential)**. Keep sharing **Restricted** and share it with nobody. Copy its ID from the URL (`drive.google.com/drive/folders/`**`THIS_PART`**).
@@ -35,6 +35,8 @@ New → **Shortlist / Keep for reference / Reject** → Shortlisted → **Schedu
 Kept candidates can be revived later; a second interview round is supported. Rejections need a reason. Every step is written to the candidate's history.
 
 ## Master data (edit in Supabase → Table Editor)
+
+- **Candidate codes** = `<brand code>-<department code>-<number>`, e.g. `TE-BOH-001`, numbered per brand + department. Brand codes are in `hr_brands.code` (created automatically from the brand's initials the first time it's used — edit there if you want a different one); department codes in `hr_departments` (FOH, BAR, BOH, PST, OFC). Changing a code affects new candidates only.
 
 - **Brands** = brands in the shared outlets list (`app_config` → `outlets`, same list as Maintenance/Store Visit) **plus** `hr_brands` for brands not in that list yet (seeded: Mensho Tokyo, Bulgogi Syo, Seorae Jib, Real Hakka). Duplicates are merged automatically.
 - **Positions** = `hr_positions` (department, position, sort, active). Set `active = false` to hide one.

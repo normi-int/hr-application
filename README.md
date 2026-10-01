@@ -2,7 +2,7 @@
 
 Candidate tracker for HR: drop CVs and portfolios, shortlist / keep / reject, schedule and record interviews, then pass / keep / reject. Same stack and accounts as Maintenance and Store Visit: one `index.html` on GitHub Pages, Supabase project `clprrwuizmlsddxmlvrh`.
 
-Live URL (after setup): `https://normi-int.github.io/hr/`
+Live URL (after setup): `https://normi-int.github.io/hr-application/`
 
 ## Setup (one time)
 
@@ -14,7 +14,7 @@ Live URL (after setup): `https://normi-int.github.io/hr/`
    3. **Deploy → New deployment → Web app** · Execute as: **Me** · Who has access: **Anyone** → Deploy → authorise.
    4. Copy the Web app URL and paste it into `index.html` → `DRIVE_BRIDGE_URL`.
    (If `DRIVE_BRIDGE_URL` is left empty, files go to the Supabase Storage bucket `hr-files` instead.)
-3. **GitHub** — create repo `normi-int/hr`, upload `index.html` (plus `supabase/` and `drive-bridge/` for reference).
+3. **GitHub** — create repo `normi-int/hr-application`, upload `index.html` (plus `supabase/` and `drive-bridge/` for reference).
    Settings → Pages → Build and deployment → *Deploy from a branch* → `main` / root → Save.
 4. **Access** — sign in as an owner → **👥 Access** → add each person by username or email and pick a role.
    The account must already exist (create it the usual way, as for Maintenance / Store Visit).

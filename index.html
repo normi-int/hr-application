@@ -171,7 +171,7 @@
 <div id="toast" class="toast hide"></div>
 
 <script>
-var APP_VERSION="v1.2";
+var APP_VERSION="v1.3";
 var BUILTIN={url:"https://clprrwuizmlsddxmlvrh.supabase.co", key:"sb_publishable_bY46Emu9VVzYZEhpjxnr2A_9_ranhHt"};
 var BUCKET="hr-files";
 // Google Drive storage: paste the Drive bridge's Web app URL here (see drive-bridge/Code.gs).
@@ -214,7 +214,7 @@ var I18N={
   "a.file_kind":"File type","a.kind_cv":"CV","a.kind_portfolio":"Portfolio","a.kind_interview":"Interview form","a.pick_files":"Files",
   "a.delete_warn":"This permanently deletes the candidate, all their files and history. Use it when a candidate asks for their data to be removed. It cannot be undone.","a.delete_reason":"Reason for deleting",
   "a.err_date":"Please pick the date and time.","a.err_nofiles":"Please choose at least one file.","a.saved":"Saved","a.deleted":"Candidate deleted",
-  "viewer.download":"Download","viewer.loading":"Loading…","viewer.nopreview":"No preview for this file type (Word, PowerPoint, HEIC, ZIP). Use Download.",
+  "viewer.download":"Download","viewer.loading":"Loading…","viewer.nopreview":"This file can't be previewed here (e.g. Word, PowerPoint, HEIC, ZIP or a damaged image). Use Download.",
   "u.title":"Access","u.intro":"Who can use Recruitment. Owners are always admin. Create the account first the usual way (same accounts as Maintenance / Store Visit), then add it here.",
   "u.add":"Add user","u.login":"Username or email","u.role":"Role","u.remove":"Remove","u.owner":"Owner (always admin)","u.roles_help":"admin: everything + access + delete · hr: add candidates, upload, schedule & record interviews, decide · reviewer: view, shortlist/keep/reject, decide after interview, comment",
   "r.admin":"Admin","r.hr":"HR","r.reviewer":"Reviewer",
@@ -241,7 +241,7 @@ var I18N={
   "a.file_kind":"Jenis file","a.kind_cv":"CV","a.kind_portfolio":"Portofolio","a.kind_interview":"Form interview","a.pick_files":"File",
   "a.delete_warn":"Ini menghapus permanen kandidat beserta semua file dan riwayatnya. Gunakan jika kandidat meminta datanya dihapus. Tidak bisa dibatalkan.","a.delete_reason":"Alasan menghapus",
   "a.err_date":"Pilih tanggal dan jam.","a.err_nofiles":"Pilih minimal satu file.","a.saved":"Tersimpan","a.deleted":"Kandidat dihapus",
-  "viewer.download":"Unduh","viewer.loading":"Memuat…","viewer.nopreview":"Pratinjau tidak tersedia untuk jenis file ini (Word, PowerPoint, HEIC, ZIP). Gunakan Unduh.",
+  "viewer.download":"Unduh","viewer.loading":"Memuat…","viewer.nopreview":"File ini tidak bisa ditampilkan di sini (mis. Word, PowerPoint, HEIC, ZIP atau gambar rusak). Gunakan Unduh.",
   "u.title":"Akses","u.intro":"Siapa saja yang bisa memakai Rekrutmen. Owner selalu admin. Buat akunnya dulu seperti biasa (akun yang sama dengan Maintenance / Store Visit), lalu tambahkan di sini.",
   "u.add":"Tambah user","u.login":"Username atau email","u.role":"Peran","u.remove":"Hapus","u.owner":"Owner (selalu admin)","u.roles_help":"admin: semua + akses + hapus · hr: tambah kandidat, upload, jadwalkan & catat interview, putuskan · reviewer: lihat, shortlist/simpan/tolak, putuskan setelah interview, komentar",
   "r.admin":"Admin","r.hr":"HR","r.reviewer":"Reviewer",
@@ -693,7 +693,11 @@ function showViewer(f, blob){
   $("vName").textContent=f.name; $("vDl").href=viewUrl; $("vDl").download=f.name;
   var body=$("vBody"); body.innerHTML="";
   $("viewer").classList.remove("hide");
-  if(/^image\/(jpe?g|png|webp|gif)$/i.test(type)) body.innerHTML='<img src="'+viewUrl+'" alt="">';
+  if(/^image\/(jpe?g|png|webp|gif)$/i.test(type)){
+    var img=new Image(); img.alt="";
+    img.onerror=function(){ if(seq===viewSeq) body.innerHTML='<div class="empty">'+esc(t("viewer.nopreview"))+'</div>'; };
+    img.src=viewUrl; body.appendChild(img);
+  }
   else if(type==="application/pdf"||/\.pdf$/i.test(f.name)) renderPdf(blob,body,seq);
   else body.innerHTML='<div class="empty">'+esc(t("viewer.nopreview"))+'</div>';
 }

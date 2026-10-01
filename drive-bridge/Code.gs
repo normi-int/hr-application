@@ -10,7 +10,7 @@
  * user's own token, so the history shows who uploaded what.
  *
  * DEPLOY FROM THE HR GOOGLE ACCOUNT:
- *   1. script.google.com → New project → paste this file → fill ROOT_FOLDER_ID below → Save.
+ *   1. script.google.com → New project → paste this file → put the folder ID (or its link) in ROOT_FOLDER_ID_RAW below → Save.
  *   2. Deploy → New deployment → type: Web app
  *        Execute as: Me   ·   Who has access: Anyone
  *   3. Authorise when asked, copy the Web app URL, paste it into index.html → DRIVE_BRIDGE_URL.
@@ -19,7 +19,13 @@
 
 const SUPABASE_URL   = 'https://clprrwuizmlsddxmlvrh.supabase.co';
 const SUPABASE_KEY   = 'sb_publishable_bY46Emu9VVzYZEhpjxnr2A_9_ranhHt';   // publishable key (same as the app)
-const ROOT_FOLDER_ID = '';      // ID of a PRIVATE Drive folder, e.g. "HR – Candidates (Confidential)"
+const ROOT_FOLDER_ID_RAW = '';  // ID (or full link) of a PRIVATE Drive folder, e.g. "HR – Candidates (Confidential)"
+// Accepts a bare ID or a pasted folder link; strips "?..." and anything else that isn't part of the ID.
+const ROOT_FOLDER_ID = (function (s) {
+  s = String(s || '').trim();
+  const m = /folders\/([A-Za-z0-9_-]+)/.exec(s) || /^([A-Za-z0-9_-]+)/.exec(s);
+  return m ? m[1] : '';
+})(ROOT_FOLDER_ID_RAW);
 const MAX_MB = 10;              // max upload per file
 const VIEW_MAX_MB = 15;         // max file size the in-app viewer will load
 const ALLOWED = /\.(pdf|docx?|pptx?|jpe?g|png|webp|heic|zip)$/i;

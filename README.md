@@ -10,7 +10,7 @@ Live URL (after setup): `https://normi-int.github.io/hr-application/`
    Creates the `hr_*` tables and all permissions. Safe to re-run.
 2. **Google Drive (file storage)** — signed in as the **HR Google account**:
    1. In Google Drive, create a folder, e.g. **HR – Candidates (Confidential)**. Keep sharing **Restricted** and share it with nobody. Copy its ID from the URL (`drive.google.com/drive/folders/`**`THIS_PART`**).
-   2. Go to script.google.com → **New project** → paste `drive-bridge/Code.gs` → put the folder ID in `ROOT_FOLDER_ID` → Save.
+   2. Go to script.google.com → **New project** → paste `drive-bridge/Code.gs` → put the folder ID (or the whole folder link) in `ROOT_FOLDER_ID_RAW` → Save.
    3. **Deploy → New deployment → Web app** · Execute as: **Me** · Who has access: **Anyone** → Deploy → authorise.
    4. Copy the Web app URL and paste it into `index.html` → `DRIVE_BRIDGE_URL`.
    (If `DRIVE_BRIDGE_URL` is left empty, files go to the Supabase Storage bucket `hr-files` instead.)

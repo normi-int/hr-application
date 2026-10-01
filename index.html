@@ -171,14 +171,16 @@
 <div id="toast" class="toast hide"></div>
 
 <script>
-var APP_VERSION="v1.3";
+var APP_VERSION="v1.4";
 var BUILTIN={url:"https://clprrwuizmlsddxmlvrh.supabase.co", key:"sb_publishable_bY46Emu9VVzYZEhpjxnr2A_9_ranhHt"};
 var BUCKET="hr-files";
 // Google Drive storage: paste the Drive bridge's Web app URL here (see drive-bridge/Code.gs).
 // Leave empty to store files in Supabase Storage instead.
 var DRIVE_BRIDGE_URL="https://script.google.com/macros/s/AKfycbxdfrT7osP7umgadMr0Q7EjqjWE_BPFAeew-SRSmTdPoqCkneawhepWnBbvA_RYsc3e7Q/exec";
 var MAX_MB=10, MAX_TOTAL_MB=40;
-var ACCEPT=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.heic,.zip";
+// Only PDF and images: these are what the in-app viewer can show (also on phones).
+var ACCEPT=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp";
+var ALLOWED_RE=/\.(pdf|jpe?g|png|webp)$/i;
 var PDFJS="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
 
 var PERMS={add:["admin","hr"],screening:["admin","hr","reviewer"],schedule:["admin","hr"],record:["admin","hr"],decide:["admin","hr","reviewer"],comment:["admin","hr","reviewer"],reopen:["admin"],addFiles:["admin","hr"],del:["admin"],users:["admin"]};
@@ -203,7 +205,7 @@ var I18N={
   "g.active":"In progress","g.new":"New","g.short":"Shortlisted","g.int":"Interview","g.pass":"Passed","g.keep":"Kept for reference","g.rej":"Rejected","g.all":"All",
   "st.NEW":"New","st.SHORTLISTED":"Shortlisted","st.KEEP_SCREENING":"Kept for reference (screening)","st.REJECTED_SCREENING":"Rejected (screening)","st.INTERVIEW_SCHEDULED":"Interview scheduled","st.INTERVIEWED":"Interviewed – awaiting decision","st.PASSED":"Passed","st.KEEP_INTERVIEW":"Kept for reference (interview)","st.REJECTED_INTERVIEW":"Rejected (interview)",
   "f.name":"Full name","f.phone":"Phone / WhatsApp","f.email":"Email","f.brand":"Brand","f.dept":"Department","f.pos":"Position","f.source":"Source","f.plink":"Portfolio link","f.cv":"CV","f.pf":"Portfolio files (you can pick several)","f.notes":"Notes","f.choose":"Choose…","f.choose_dept":"Choose department first",
-  "f.plink_ph":"Instagram, Behance, Drive…","f.notes_ph":"Expected salary, availability, who referred them…","f.req_note":"CV or portfolio (file or link) is required. Max "+MAX_MB+" MB per file.",
+  "f.plink_ph":"Instagram, Behance, Drive…","f.notes_ph":"Expected salary, availability, who referred them…","f.req_note":"CV or portfolio (file or link) is required. PDF or image (JPG, PNG) only, max "+MAX_MB+" MB per file.",
   "add.title":"Add candidate","add.save":"Save candidate","add.err_fill":"Please fill in name, brand, department and position.","add.err_files":"Please add a CV, or a portfolio file/link.",
   "add.dup":"This phone/email is already in the system:","add.dup_q":"Save as a new application anyway?","add.saved":"Candidate saved","add.upload_fail":"Candidate saved, but these files failed to upload — use \"Add files\" to try again:",
   "d.position":"Position","d.brand":"Brand","d.phone":"Phone","d.email":"Email","d.source":"Source","d.interview":"Interview","d.added":"Added","d.by":"by","d.notes":"Notes",
@@ -214,11 +216,11 @@ var I18N={
   "a.file_kind":"File type","a.kind_cv":"CV","a.kind_portfolio":"Portfolio","a.kind_interview":"Interview form","a.pick_files":"Files",
   "a.delete_warn":"This permanently deletes the candidate, all their files and history. Use it when a candidate asks for their data to be removed. It cannot be undone.","a.delete_reason":"Reason for deleting",
   "a.err_date":"Please pick the date and time.","a.err_nofiles":"Please choose at least one file.","a.saved":"Saved","a.deleted":"Candidate deleted",
-  "viewer.download":"Download","viewer.loading":"Loading…","viewer.nopreview":"This file can't be previewed here (e.g. Word, PowerPoint, HEIC, ZIP or a damaged image). Use Download.",
+  "viewer.download":"Download","viewer.loading":"Loading…","viewer.nopreview":"This file can't be previewed here (it may be damaged or an older file type). Use Download.",
   "u.title":"Access","u.intro":"Who can use Recruitment. Owners are always admin. Create the account first the usual way (same accounts as Maintenance / Store Visit), then add it here.",
   "u.add":"Add user","u.login":"Username or email","u.role":"Role","u.remove":"Remove","u.owner":"Owner (always admin)","u.roles_help":"admin: everything + access + delete · hr: add candidates, upload, schedule & record interviews, decide · reviewer: view, shortlist/keep/reject, decide after interview, comment",
   "r.admin":"Admin","r.hr":"HR","r.reviewer":"Reviewer",
-  "common.close":"Close","common.cancel":"Cancel","common.please_wait":"Please wait…","common.session":"Session ended — please sign in again.","common.uploading":"Uploading"
+  "common.close":"Close","common.cancel":"Cancel","common.please_wait":"Please wait…","common.session":"Session ended — please sign in again.","common.uploading":"Uploading","f.err_type":"Only PDF or image files (JPG, PNG, WebP) can be uploaded. Please convert or save it as PDF first:"
  },
  id:{
   "app.title":"Rekrutmen","header.users":"👥 Akses","header.signout":"Keluar",
@@ -230,7 +232,7 @@ var I18N={
   "g.active":"Dalam proses","g.new":"Baru","g.short":"Shortlist","g.int":"Interview","g.pass":"Lolos","g.keep":"Simpan untuk referensi","g.rej":"Ditolak","g.all":"Semua",
   "st.NEW":"Baru","st.SHORTLISTED":"Shortlist","st.KEEP_SCREENING":"Simpan untuk referensi (screening)","st.REJECTED_SCREENING":"Ditolak (screening)","st.INTERVIEW_SCHEDULED":"Interview dijadwalkan","st.INTERVIEWED":"Sudah interview – menunggu keputusan","st.PASSED":"Lolos","st.KEEP_INTERVIEW":"Simpan untuk referensi (interview)","st.REJECTED_INTERVIEW":"Ditolak (interview)",
   "f.name":"Nama lengkap","f.phone":"Telepon / WhatsApp","f.email":"Email","f.brand":"Brand","f.dept":"Departemen","f.pos":"Posisi","f.source":"Sumber","f.plink":"Link portofolio","f.cv":"CV","f.pf":"File portofolio (bisa pilih beberapa)","f.notes":"Catatan","f.choose":"Pilih…","f.choose_dept":"Pilih departemen dulu",
-  "f.plink_ph":"Instagram, Behance, Drive…","f.notes_ph":"Ekspektasi gaji, ketersediaan, siapa yang mereferensikan…","f.req_note":"Wajib ada CV atau portofolio (file atau link). Maks "+MAX_MB+" MB per file.",
+  "f.plink_ph":"Instagram, Behance, Drive…","f.notes_ph":"Ekspektasi gaji, ketersediaan, siapa yang mereferensikan…","f.req_note":"Wajib ada CV atau portofolio (file atau link). Hanya PDF atau gambar (JPG, PNG), maks "+MAX_MB+" MB per file.",
   "add.title":"Tambah kandidat","add.save":"Simpan kandidat","add.err_fill":"Isi nama, brand, departemen dan posisi.","add.err_files":"Tambahkan CV, atau file/link portofolio.",
   "add.dup":"Telepon/email ini sudah ada di sistem:","add.dup_q":"Tetap simpan sebagai lamaran baru?","add.saved":"Kandidat tersimpan","add.upload_fail":"Kandidat tersimpan, tapi file berikut gagal di-upload — gunakan \"Tambah file\" untuk coba lagi:",
   "d.position":"Posisi","d.brand":"Brand","d.phone":"Telepon","d.email":"Email","d.source":"Sumber","d.interview":"Interview","d.added":"Ditambahkan","d.by":"oleh","d.notes":"Catatan",
@@ -241,11 +243,11 @@ var I18N={
   "a.file_kind":"Jenis file","a.kind_cv":"CV","a.kind_portfolio":"Portofolio","a.kind_interview":"Form interview","a.pick_files":"File",
   "a.delete_warn":"Ini menghapus permanen kandidat beserta semua file dan riwayatnya. Gunakan jika kandidat meminta datanya dihapus. Tidak bisa dibatalkan.","a.delete_reason":"Alasan menghapus",
   "a.err_date":"Pilih tanggal dan jam.","a.err_nofiles":"Pilih minimal satu file.","a.saved":"Tersimpan","a.deleted":"Kandidat dihapus",
-  "viewer.download":"Unduh","viewer.loading":"Memuat…","viewer.nopreview":"File ini tidak bisa ditampilkan di sini (mis. Word, PowerPoint, HEIC, ZIP atau gambar rusak). Gunakan Unduh.",
+  "viewer.download":"Unduh","viewer.loading":"Memuat…","viewer.nopreview":"File ini tidak bisa ditampilkan di sini (mungkin rusak atau jenis file lama). Gunakan Unduh.",
   "u.title":"Akses","u.intro":"Siapa saja yang bisa memakai Rekrutmen. Owner selalu admin. Buat akunnya dulu seperti biasa (akun yang sama dengan Maintenance / Store Visit), lalu tambahkan di sini.",
   "u.add":"Tambah user","u.login":"Username atau email","u.role":"Peran","u.remove":"Hapus","u.owner":"Owner (selalu admin)","u.roles_help":"admin: semua + akses + hapus · hr: tambah kandidat, upload, jadwalkan & catat interview, putuskan · reviewer: lihat, shortlist/simpan/tolak, putuskan setelah interview, komentar",
   "r.admin":"Admin","r.hr":"HR","r.reviewer":"Reviewer",
-  "common.close":"Tutup","common.cancel":"Batal","common.please_wait":"Mohon tunggu…","common.session":"Sesi berakhir — silakan masuk lagi.","common.uploading":"Meng-upload"
+  "common.close":"Tutup","common.cancel":"Batal","common.please_wait":"Mohon tunggu…","common.session":"Sesi berakhir — silakan masuk lagi.","common.uploading":"Meng-upload","f.err_type":"Hanya file PDF atau gambar (JPG, PNG, WebP) yang bisa di-upload. Ubah/simpan dulu sebagai PDF:"
  }
 };
 var currentLang="id";
@@ -559,6 +561,8 @@ async function submitForm(kind,to){
 
 /* ---------------- uploads ---------------- */
 function checkSizes(files){
+  var bad=files.filter(function(f){ return !ALLOWED_RE.test(f.name||""); }).map(function(f){ return f.name; });
+  if(bad.length) throw new Error(t("f.err_type")+" "+bad.join(", "));
   var total=0;
   files.forEach(function(f){ if(f.size>MAX_MB*1048576) throw new Error(f.name+" > "+MAX_MB+" MB"); total+=f.size; });
   if(total>MAX_TOTAL_MB*1048576) throw new Error("Total > "+MAX_TOTAL_MB+" MB");

@@ -28,7 +28,7 @@ const ROOT_FOLDER_ID = (function (s) {
 })(ROOT_FOLDER_ID_RAW);
 const MAX_MB = 10;              // max upload per file
 const VIEW_MAX_MB = 15;         // max file size the in-app viewer will load
-const ALLOWED = /\.(pdf|docx?|pptx?|jpe?g|png|webp|heic|zip)$/i;
+const ALLOWED = /\.(pdf|jpe?g|png|webp)$/i;   // PDF and images only
 
 /* ============================ entry points ============================ */
 
@@ -63,7 +63,7 @@ function upload_(req, role) {
   if (['admin', 'hr'].indexOf(role) < 0) throw new Error('You do not have permission to upload.');
   if (['cv', 'portfolio', 'interview'].indexOf(req.kind) < 0) throw new Error('Invalid file type.');
   const name = String(req.name || '').trim();
-  if (!name || !ALLOWED.test(name)) throw new Error(name + ': file type not allowed.');
+  if (!name || !ALLOWED.test(name)) throw new Error(name + ': only PDF or image files (JPG, PNG, WebP) are allowed.');
   if (!req.data) throw new Error(name + ': file is empty.');
   if (req.data.length * 0.75 > MAX_MB * 1048576) throw new Error(name + ' is larger than ' + MAX_MB + ' MB.');
 

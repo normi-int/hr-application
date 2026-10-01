@@ -45,7 +45,7 @@ Kept candidates can be revived later; a second interview round is supported. Rej
 
 - Files are saved in the HR account's **private Drive folder**: `Brand / HR-00001 – Name – Position / CV - …, Portfolio - …, Interview - …`. The HR account can browse them in Drive as normal; nobody else needs (or gets) Drive access.
 - How it works: the app sends each file to the Drive bridge (Apps Script, owned by the HR account) together with the user's Supabase login. The bridge asks Supabase for that user's HR role first and refuses anyone without access, then saves the file and registers it under the user's name. Viewing goes the same way, and the bridge only serves files inside the recruitment folder.
-- PDFs and images preview in the app; Word / PowerPoint / HEIC / ZIP show a Download button. Max 10 MB per upload, 15 MB for preview.
+- Only **PDF and images (JPG, PNG, WebP)** can be uploaded — both open inside the app, also on phones. Word, PowerPoint, Excel etc. are refused (save them as PDF first). Max 10 MB per upload, 15 MB for preview.
 - Every file view is logged in `hr_access_log` (who, when, which candidate, which file). Admins can read it in the Table Editor.
 - **Delete candidate** (admin) permanently removes the candidate and history, and moves their Drive files to the HR account's Bin (recoverable there for 30 days). The deletion itself stays in `hr_access_log`.
 - All database writes go through functions that check the role and the status flow; the tables have no direct write permission. Safe with a public repo — the key in `index.html` is the publishable key, and the database enforces access.

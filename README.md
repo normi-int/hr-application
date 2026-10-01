@@ -6,14 +6,15 @@ Live URL (after setup): `https://normi-int.github.io/hr-application/`
 
 ## Setup (one time)
 
-1. **Database** — Supabase Dashboard → SQL Editor → New query → paste `supabase/hr_0001_init.sql` → Run, then the same for `supabase/hr_0002_candidate_codes.sql` (candidate codes like `TE-BOH-001`).
+1. **Database** — Supabase Dashboard → SQL Editor → New query → paste `supabase/hr_0001_init.sql` → Run, then the same for `supabase/hr_0002_candidate_codes.sql` (candidate codes like `TE-BOH-001`) and `supabase/hr_0003_faster_bridge.sql` (one permission check per file action; blocks Supabase Storage uploads).
    Creates the `hr_*` tables and all permissions. Safe to re-run.
 2. **Google Drive (file storage)** — signed in as the **HR Google account**:
    1. In Google Drive, create a folder, e.g. **HR – Candidates (Confidential)**. Keep sharing **Restricted** and share it with nobody. Copy its ID from the URL (`drive.google.com/drive/folders/`**`THIS_PART`**).
    2. Go to script.google.com → **New project** → paste `drive-bridge/Code.gs` → put the folder ID (or the whole folder link) in `ROOT_FOLDER_ID_RAW` → Save.
    3. **Deploy → New deployment → Web app** · Execute as: **Me** · Who has access: **Anyone** → Deploy → authorise.
    4. Copy the Web app URL and paste it into `index.html` → `DRIVE_BRIDGE_URL`.
-   (If `DRIVE_BRIDGE_URL` is left empty, files go to the Supabase Storage bucket `hr-files` instead.)
+   Files are stored **only** in Google Drive — never in Supabase Storage (uploads there are blocked by `hr_0003`).
+   5. (Faster first open) In the script editor pick **installKeepWarm** → **Run**, once.
 3. **GitHub** — create repo `normi-int/hr-application`, upload `index.html` (plus `supabase/` and `drive-bridge/` for reference).
    Settings → Pages → Build and deployment → *Deploy from a branch* → `main` / root → Save.
 4. **Access** — sign in as an owner → **👥 Access** → add each person by username or email and pick a role.
@@ -45,8 +46,9 @@ Kept candidates can be revived later; a second interview round is supported. Rej
 
 - Files are saved in the HR account's **private Drive folder**: `Brand / HR-00001 – Name – Position / CV - …, Portfolio - …, Interview - …`. The HR account can browse them in Drive as normal; nobody else needs (or gets) Drive access.
 - How it works: the app sends each file to the Drive bridge (Apps Script, owned by the HR account) together with the user's Supabase login. The bridge asks Supabase for that user's HR role first and refuses anyone without access, then saves the file and registers it under the user's name. Viewing goes the same way, and the bridge only serves files inside the recruitment folder.
+- **Speed:** opening a candidate fetches their CV in the background (logged as `preload`), so *View* is usually instant; files opened once stay in memory until sign-out. Photos/screenshots over 500 KB are resized (max 2200 px, JPEG) in the browser before upload, so a 10–15 MB phone photo becomes ~0.5 MB.
 - Only **PDF and images (JPG, PNG, WebP)** can be uploaded — both open inside the app, also on phones. Word, PowerPoint, Excel etc. are refused (save them as PDF first). Max 10 MB per upload, 15 MB for preview.
-- Every file view is logged in `hr_access_log` (who, when, which candidate, which file). Admins can read it in the Table Editor.
+- Every file view is logged in `hr_access_log` (who, when, which candidate, which file; `preload` = fetched in advance when the candidate was opened). Admins can read it in the Table Editor.
 - **Delete candidate** (admin) permanently removes the candidate and history, and moves their Drive files to the HR account's Bin (recoverable there for 30 days). The deletion itself stays in `hr_access_log`.
 - All database writes go through functions that check the role and the status flow; the tables have no direct write permission. Safe with a public repo — the key in `index.html` is the publishable key, and the database enforces access.
 

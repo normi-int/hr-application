@@ -171,13 +171,14 @@
 <div id="toast" class="toast hide"></div>
 
 <script>
-var APP_VERSION="v1.4";
+var APP_VERSION="v1.5";
 var BUILTIN={url:"https://clprrwuizmlsddxmlvrh.supabase.co", key:"sb_publishable_bY46Emu9VVzYZEhpjxnr2A_9_ranhHt"};
-var BUCKET="hr-files";
-// Google Drive storage: paste the Drive bridge's Web app URL here (see drive-bridge/Code.gs).
-// Leave empty to store files in Supabase Storage instead.
+// Files are stored ONLY in Google Drive, through the Drive bridge (see drive-bridge/Code.gs).
+// Nothing is ever written to Supabase Storage.
 var DRIVE_BRIDGE_URL="https://script.google.com/macros/s/AKfycbxdfrT7osP7umgadMr0Q7EjqjWE_BPFAeew-SRSmTdPoqCkneawhepWnBbvA_RYsc3e7Q/exec";
 var MAX_MB=10, MAX_TOTAL_MB=40;
+var IMG_SHRINK_FROM_KB=500, IMG_MAX_PX=2200, IMG_JPEG_Q=0.85;   // photos/screenshots are shrunk before upload
+var PRELOAD_MAX_MB=5, CACHE_MAX_MB=60;                         // CV fetched in advance; opened files kept for the session
 // Only PDF and images: these are what the in-app viewer can show (also on phones).
 var ACCEPT=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp";
 var ALLOWED_RE=/\.(pdf|jpe?g|png|webp)$/i;
@@ -220,7 +221,7 @@ var I18N={
   "u.title":"Access","u.intro":"Who can use Recruitment. Owners are always admin. Create the account first the usual way (same accounts as Maintenance / Store Visit), then add it here.",
   "u.add":"Add user","u.login":"Username or email","u.role":"Role","u.remove":"Remove","u.owner":"Owner (always admin)","u.roles_help":"admin: everything + access + delete · hr: add candidates, upload, schedule & record interviews, decide · reviewer: view, shortlist/keep/reject, decide after interview, comment",
   "r.admin":"Admin","r.hr":"HR","r.reviewer":"Reviewer",
-  "common.close":"Close","common.cancel":"Cancel","common.please_wait":"Please wait…","common.session":"Session ended — please sign in again.","common.uploading":"Uploading","f.err_type":"Only PDF or image files (JPG, PNG, WebP) can be uploaded. Please convert or save it as PDF first:"
+  "common.close":"Close","common.cancel":"Cancel","common.please_wait":"Please wait…","common.session":"Session ended — please sign in again.","common.uploading":"Uploading","common.preparing":"Preparing files","f.err_type":"Only PDF or image files (JPG, PNG, WebP) can be uploaded. Please convert or save it as PDF first:"
  },
  id:{
   "app.title":"Rekrutmen","header.users":"👥 Akses","header.signout":"Keluar",
@@ -247,7 +248,7 @@ var I18N={
   "u.title":"Akses","u.intro":"Siapa saja yang bisa memakai Rekrutmen. Owner selalu admin. Buat akunnya dulu seperti biasa (akun yang sama dengan Maintenance / Store Visit), lalu tambahkan di sini.",
   "u.add":"Tambah user","u.login":"Username atau email","u.role":"Peran","u.remove":"Hapus","u.owner":"Owner (selalu admin)","u.roles_help":"admin: semua + akses + hapus · hr: tambah kandidat, upload, jadwalkan & catat interview, putuskan · reviewer: lihat, shortlist/simpan/tolak, putuskan setelah interview, komentar",
   "r.admin":"Admin","r.hr":"HR","r.reviewer":"Reviewer",
-  "common.close":"Tutup","common.cancel":"Batal","common.please_wait":"Mohon tunggu…","common.session":"Sesi berakhir — silakan masuk lagi.","common.uploading":"Meng-upload","f.err_type":"Hanya file PDF atau gambar (JPG, PNG, WebP) yang bisa di-upload. Ubah/simpan dulu sebagai PDF:"
+  "common.close":"Tutup","common.cancel":"Batal","common.please_wait":"Mohon tunggu…","common.session":"Sesi berakhir — silakan masuk lagi.","common.uploading":"Meng-upload","common.preparing":"Menyiapkan file","f.err_type":"Hanya file PDF atau gambar (JPG, PNG, WebP) yang bisa di-upload. Ubah/simpan dulu sebagai PDF:"
  }
 };
 var currentLang="id";
@@ -337,7 +338,7 @@ async function afterLogin(){
 var signingOut=false;
 async function signOut(){
   if(signingOut) return; signingOut=true;
-  me=null; hrRole=null; S.rows=[];
+  me=null; hrRole=null; S.rows=[]; clearFileCache();
   try{ await sb.auth.signOut(); }catch(e){}
   signingOut=false;
   closePanel(); closeViewer();
@@ -463,6 +464,7 @@ function renderDetail(){
       return '<li><div class="meta">'+esc(fmtDT(a.at))+' · '+esc(a.user_name||'')+' · <b>'+esc(a.action)+'</b>'+arrow+'</div>'+(a.comment?esc(a.comment):'')+'</li>';
     }).join("")+'</ul></div>';
   openPanel(c.name, html);
+  preloadFiles(D.files);
 }
 function actionsFor(c){
   var s=c.status, a=[];
@@ -531,25 +533,25 @@ async function submitForm(kind,to){
       await rpc("hr_schedule",{p_id:id,p_at:new Date(dt+"T"+tm+":00+07:00").toISOString(),p_interviewer:$("fWho").value,p_location:$("fLoc").value,p_comment:cm});
     }
     else if(kind==="record"){
-      var rf=[].slice.call($("fFile").files); checkSizes(rf);
       busy();
+      var rf=await prepareFiles([].slice.call($("fFile").files));
       var iid=await rpc("hr_record_interview",{p_id:id,p_recommendation:$("fRec").value,p_comment:cm});
       var failed=await uploadFiles(id,"interview",rf,iid);
       if(failed.length) alert(t("add.upload_fail")+"\n\n"+failed.join("\n"));
     }
     else if(kind==="files"){
-      var ff=[].slice.call($("fFile").files); if(!ff.length) throw new Error(t("a.err_nofiles")); checkSizes(ff);
+      if(!$("fFile").files.length) throw new Error(t("a.err_nofiles"));
+      busy();
+      var ff=await prepareFiles([].slice.call($("fFile").files));
       var k=$("fKind").value, iv=null;
       if(k==="interview"){ var last=S.current.interviews[S.current.interviews.length-1]; iv=last?last.id:null; }
-      busy();
       var fl=await uploadFiles(id,k,ff,iv);
       if(fl.length) alert(t("add.upload_fail")+"\n\n"+fl.join("\n"));
     }
     else if(kind==="delete"){
       busy();
       var paths=await rpc("hr_delete_candidate",{p_id:id,p_reason:cm})||[];
-      var gd=paths.filter(function(p){ return /^gdrive:/.test(p); }), st=paths.filter(function(p){ return !/^gdrive:/.test(p); });
-      if(st.length) await sb.storage.from(BUCKET).remove(st);
+      var gd=paths.filter(function(p){ return /^gdrive:/.test(p); });
       if(gd.length){ try{ await bridge("trash",{candidateId:id,paths:gd}); }catch(e){ alert("Candidate deleted, but some Drive files could not be moved to Bin: "+e.message); } }
       busy(false); closePanel(); toast(t("a.deleted")); loadList(); return;
     }
@@ -560,6 +562,35 @@ async function submitForm(kind,to){
 }
 
 /* ---------------- uploads ---------------- */
+// Type check → shrink photos/screenshots → size check. Returns the files to upload.
+async function prepareFiles(files){
+  var bad=files.filter(function(f){ return !ALLOWED_RE.test(f.name||""); }).map(function(f){ return f.name; });
+  if(bad.length) throw new Error(t("f.err_type")+" "+bad.join(", "));
+  var out=[];
+  for(var i=0;i<files.length;i++){
+    if(files.length>0) busy(t("common.preparing")+" "+(i+1)+"/"+files.length+"…");
+    out.push(await shrinkImage(files[i]));
+  }
+  checkSizes(out);
+  return out;
+}
+// Photos and screenshots: resize to max IMG_MAX_PX on the long side and save as JPEG.
+// Keeps the original if it is already small, not an image, or the result would not be smaller.
+async function shrinkImage(f){
+  if(!/^image\/(jpeg|png|webp)$/i.test(f.type||"") || f.size<IMG_SHRINK_FROM_KB*1024) return f;
+  try{
+    var bmp;
+    try{ bmp=await createImageBitmap(f,{imageOrientation:"from-image"}); }catch(e){ bmp=await createImageBitmap(f); }
+    var scale=Math.min(1, IMG_MAX_PX/Math.max(bmp.width,bmp.height));
+    var w=Math.max(1,Math.round(bmp.width*scale)), h=Math.max(1,Math.round(bmp.height*scale));
+    var cv=document.createElement("canvas"); cv.width=w; cv.height=h;
+    var ctx=cv.getContext("2d"); ctx.fillStyle="#fff"; ctx.fillRect(0,0,w,h); ctx.drawImage(bmp,0,0,w,h);
+    if(bmp.close) bmp.close();
+    var blob=await new Promise(function(r){ cv.toBlob(r,"image/jpeg",IMG_JPEG_Q); });
+    if(!blob || blob.size>=f.size) return f;
+    return new File([blob], f.name.replace(/\.(png|webp|jpe?g)$/i,"")+".jpg", {type:"image/jpeg"});
+  }catch(e){ return f; }
+}
 function checkSizes(files){
   var bad=files.filter(function(f){ return !ALLOWED_RE.test(f.name||""); }).map(function(f){ return f.name; });
   if(bad.length) throw new Error(t("f.err_type")+" "+bad.join(", "));
@@ -567,21 +598,15 @@ function checkSizes(files){
   files.forEach(function(f){ if(f.size>MAX_MB*1048576) throw new Error(f.name+" > "+MAX_MB+" MB"); total+=f.size; });
   if(total>MAX_TOTAL_MB*1048576) throw new Error("Total > "+MAX_TOTAL_MB+" MB");
 }
-// Uploads each file (Google Drive via the bridge, or Supabase Storage), then registers it. Returns names that failed.
+// Uploads each file to Google Drive through the bridge (which also registers it). Returns names that failed.
 async function uploadFiles(cid, kind, files, interviewId){
   var failed=[];
   for(var i=0;i<files.length;i++){
     var f=files[i];
     busy(t("common.uploading")+" "+(i+1)+"/"+files.length+"…\n"+f.name);
     try{
-      if(DRIVE_BRIDGE_URL){
-        await bridge("upload",{candidateId:cid,kind:kind,name:f.name,mime:f.type||null,size:f.size,interviewId:interviewId||null,data:await readB64(f)});
-      }else{
-        var path=cid+"/"+kind+"-"+Date.now()+"-"+i+"-"+safeKey(f.name);
-        var up=await sb.storage.from(BUCKET).upload(path,f,{contentType:f.type||"application/octet-stream",upsert:false});
-        if(up.error) throw up.error;
-        await rpc("hr_add_file",{p_candidate:cid,p_kind:kind,p_name:f.name,p_path:path,p_size:f.size,p_mime:f.type||null,p_interview:interviewId||null});
-      }
+      if(!DRIVE_BRIDGE_URL) throw new Error("Google Drive is not set up (DRIVE_BRIDGE_URL is empty).");
+      await bridge("upload",{candidateId:cid,kind:kind,name:f.name,mime:f.type||null,size:f.size,interviewId:interviewId||null,data:await readB64(f)});
     }catch(e){ failed.push(f.name+" — "+errMsg(e)); }
   }
   return failed;
@@ -650,8 +675,9 @@ async function submitAdd(){
   try{
     if(!d.name||!d.brand||!d.department||!d.position) throw new Error(t("add.err_fill"));
     if(!cv.length&&!pf.length&&!d.portfolio_link) throw new Error(t("add.err_files"));
-    checkSizes(cv.concat(pf));
     $("aGo").disabled=true; busy();
+    cv=await prepareFiles(cv); pf=await prepareFiles(pf);
+    busy();
     var dups=await findDuplicates(d.phone,d.email);
     if(dups.length){
       busy(false);
@@ -670,21 +696,35 @@ async function submitAdd(){
 
 /* ---------------- in-app file viewer ---------------- */
 var viewSeq=0, viewUrl=null;
+// Files already fetched this session (by id): { p: Promise<Blob>, size }. Cleared on sign-out.
+var fileCache={}, fileCacheBytes=0, lastWake=0;
+function clearFileCache(){ fileCache={}; fileCacheBytes=0; }
+function fetchFile(f, logAs){
+  if(!/^gdrive:/.test(f.path||"")) return Promise.reject(new Error("This file is not stored in Google Drive."));
+  var entry={size:f.size||0};
+  entry.p=bridge("view",{fileId:f.id, logAs:logAs}).then(function(d){ return b64ToBlob(d.data, d.mime||f.mime||"application/octet-stream"); });
+  entry.p.catch(function(){ if(fileCache[f.id]===entry){ delete fileCache[f.id]; fileCacheBytes-=entry.size; } });
+  if(fileCacheBytes+entry.size>CACHE_MAX_MB*1048576) clearFileCache();
+  fileCache[f.id]=entry; fileCacheBytes+=entry.size;
+  return entry;
+}
+// When a candidate is opened: fetch the CV in the background (logged as "preload") so View is instant,
+// and wake the bridge up if Google has put it to sleep.
+function preloadFiles(files){
+  if(!DRIVE_BRIDGE_URL) return;
+  var cvs=(files||[]).filter(function(f){ return f.kind==="cv" && !fileCache[f.id] && (f.size||0)<=PRELOAD_MAX_MB*1048576; });
+  if(cvs.length){ cvs.forEach(function(f){ fetchFile(f,"preload"); }); lastWake=Date.now(); }
+  else if(Date.now()-lastWake>4*60*1000){ lastWake=Date.now(); fetch(DRIVE_BRIDGE_URL).catch(function(){}); }
+}
 async function viewFile(fileId){
   var f=S.current && S.current.files.filter(function(x){ return x.id===fileId; })[0];
   if(!f) return;
+  var entry=fileCache[fileId], fresh=!entry;
+  if(fresh) entry=fetchFile(f,"view");          // the bridge logs this view
   busy();
   try{
-    var blob;
-    if(/^gdrive:/.test(f.path)){
-      var d=await bridge("view",{fileId:f.id});   // the bridge logs the view
-      blob=b64ToBlob(d.data, d.mime||f.mime||"application/octet-stream");
-    }else{
-      await rpc("hr_log_view",{p_file:f.id});
-      var r=await sb.storage.from(BUCKET).download(f.path);
-      if(r.error) throw r.error;
-      blob=r.data;
-    }
+    var blob=await entry.p;
+    if(!fresh) rpc("hr_log_view",{p_file:f.id}).catch(function(){});   // opened from memory: log it here
     busy(false);
     showViewer(f, blob);
   }catch(e){ busy(false); toast(errMsg(e)); }
